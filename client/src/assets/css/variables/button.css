@@ -1,0 +1,41 @@
+:root {
+  --button-color: var(--color-gray-700);
+  --button-color-hover: var(--color-gray-700);
+  --button-color-active: var(--color-gray-700);
+  --button-background: var(--color-gray-100);
+  --button-background-hover: var(--color-gray-200);
+  --button-background-active: var(--color-gray-300);
+  --button-border: var(--color-gray-300);
+  --button-border-hover: var(--color-gray-300);
+  --button-border-active: var(--color-gray-300);
+
+  --button-primary-color: var(--color-gray-700);
+  --button-primary-color-hover: var(--color-gray-700);
+  --button-primary-color-active: var(--color-gray-700);
+  --button-primary-background: var(--color-primary-100);
+  --button-primary-background-hover: var(--color-primary-200);
+  --button-primary-background-active: var(--color-primary-300);
+  --button-primary-border: var(--color-primary-400);
+  --button-primary-border-hover: var(--color-primary-500);
+  --button-primary-border-active: var(--color-primary-600);
+
+  --button-success-color: var(--color-gray-700);
+  --button-success-color-hover: var(--color-gray-700);
+  --button-success-color-active: var(--color-gray-700);
+  --button-success-background: var(--color-green-100);
+  --button-success-background-hover: var(--color-green-200);
+  --button-success-background-active: var(--color-green-300);
+  --button-success-border: var(--color-green-400);
+  --button-success-border-hover: var(--color-green-500);
+  --button-success-border-active: var(--color-green-600);
+
+  --button-danger-color: var(--color-gray-700);
+  --button-danger-color-hover: var(--color-gray-700);
+  --button-danger-color-active: var(--color-gray-700);
+  --button-danger-background: var(--color-red-100);
+  --button-danger-background-hover: var(--color-red-200);
+  --button-danger-background-active: var(--color-red-300);
+  --button-danger-border: var(--color-red-400);
+  --button-danger-border-hover: var(--color-red-500);
+  --button-danger-border-active: var(--color-red-600);
+}

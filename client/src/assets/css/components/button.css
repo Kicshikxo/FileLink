@@ -1,0 +1,83 @@
+@import url('~/assets/css/variables/button.css');
+
+.app-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, opacity 0.2s;
+  border-radius: 6px;
+
+  color: var(--button-color);
+  background-color: var(--button-background);
+  border: 1px solid var(--button-border);
+}
+
+.app-button--text {
+  color: var(--button-color);
+  background-color: transparent;
+  border: none;
+}
+.app-button--primary {
+  color: var(--button-primary-color);
+  background-color: var(--button-primary-background);
+  border: 1px solid var(--button-primary-border);
+}
+.app-button--success {
+  color: var(--button-success-color);
+  background-color: var(--button-success-background);
+  border: 1px solid var(--button-success-border);
+}
+.app-button--danger {
+  color: var(--button-danger-color);
+  background-color: var(--button-danger-background);
+  border: 1px solid var(--button-danger-border);
+}
+
+@media (hover: hover) {
+  .app-button:enabled:hover {
+    color: var(--button-color-hover);
+    background-color: var(--button-background-hover);
+    border-color: var(--button-border-hover);
+  }
+  .app-button--primary:enabled:hover {
+    color: var(--button-primary-color-hover);
+    background-color: var(--button-primary-background-hover);
+    border-color: var(--button-primary-border-hover);
+  }
+  .app-button--success:enabled:hover {
+    color: var(--button-success-color-hover);
+    background-color: var(--button-success-background-hover);
+    border-color: var(--button-success-border-hover);
+  }
+  .app-button--danger:enabled:hover {
+    color: var(--button-danger-color-hover);
+    background-color: var(--button-danger-background-hover);
+    border-color: var(--button-danger-border-hover);
+  }
+}
+
+.app-button:enabled:active {
+  color: var(--button-color-active);
+  background-color: var(--button-background-active);
+  border-color: var(--button-border-active);
+}
+.app-button--primary:enabled:active {
+  color: var(--button-primary-color-active);
+  background-color: var(--button-primary-background-active);
+  border-color: var(--button-primary-border-active);
+}
+.app-button--success:enabled:active {
+  color: var(--button-success-color-active);
+  background-color: var(--button-success-background-active);
+  border-color: var(--button-success-border-active);
+}
+.app-button--danger:enabled:active {
+  color: var(--button-danger-color-active);
+  background-color: var(--button-danger-background-active);
+  border-color: var(--button-danger-border-active);
+}

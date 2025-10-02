@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      href="/fonts/Rubik-Regular.ttf"
+      as="font"
+      type="font/truetype"
+      crossorigin
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileLink dashboard</title>
+  </head>
+  <body>
+    <div class="app-layout">
+      <header class="app-header">
+        <a href="/">
+          <button class="app-button app-button--text" style="font-size: 1.25rem">FileLink</button>
+        </a>
+        <a href="/dashboard" style="margin-right: auto">
+          <button class="app-button app-button--text" disabled>Мои файлы</button>
+        </a>
+        <div></div>
+      </header>
+
+      <main class="app-main">
+        <section class="app-page app-page--centered">
+          <div class="app-container"></div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="assets/js/main.js"></script>
+    <script type="module" src="assets/js/dashboard.js"></script>
+  </body>
+</html>
