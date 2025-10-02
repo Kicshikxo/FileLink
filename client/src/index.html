@@ -30,13 +30,13 @@
       <main class="app-main">
         <section class="app-page app-page--centered">
           <div class="app-container file-upload-container">
-            <div class="file-upload-container__upload-area">
+            <div class="file-upload-container__upload-area" id="upload-area">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="96"
                 height="96"
                 viewBox="0 0 24 24"
-                style="color: var(--color-gray-500)"
+                class="file-upload-container__upload-area__icon"
               >
                 <path fill="currentColor" d="M12 18l4 0h-2.5v0h-3v0h-2.5z">
                   <animate
@@ -82,7 +82,12 @@
               <span class="file-upload-container__upload-area__title">
                 Перетащите файл или нажмите, чтобы выбрать
               </span>
+              <span class="file-upload-container__upload-area__title--dragover">
+                Отпустите файл чтобы загрузить
+              </span>
             </div>
+
+            <input type="file" id="file-upload-input" multiple style="display: none" />
           </div>
         </section>
       </main>

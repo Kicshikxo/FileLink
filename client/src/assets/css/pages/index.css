@@ -18,14 +18,36 @@
   cursor: pointer;
   transition: border-color 0.2s;
 }
+.file-upload-container__upload-area--dragover {
+  border-color: var(--color-gray-500);
+}
 .file-upload-container__upload-area:hover {
   border-color: var(--color-gray-400);
 }
-.file-upload-container__upload-area__title {
+
+.file-upload-container__upload-area__icon {
+  width: 96px;
+  height: 96px;
+  color: var(--color-gray-500);
+  pointer-events: none;
+}
+
+.file-upload-container__upload-area__title,
+.file-upload-container__upload-area__title--dragover {
   font-size: 1.25rem;
   font-weight: bold;
   color: var(--color-gray-600);
   pointer-events: none;
   text-wrap: balance;
   text-align: center;
+}
+
+.file-upload-container__upload-area__title--dragover {
+  display: none;
+}
+.file-upload-container__upload-area--dragover .file-upload-container__upload-area__title {
+  display: none;
+}
+.file-upload-container__upload-area--dragover .file-upload-container__upload-area__title--dragover {
+  display: block;
 }
