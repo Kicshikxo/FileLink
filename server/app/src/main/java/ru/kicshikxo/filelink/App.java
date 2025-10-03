@@ -119,6 +119,8 @@ public class App {
         ctx.json(files);
       } catch (SQLException error) {
         throw new InternalServerErrorResponse(error.toString());
+      } catch (Exception error) {
+        throw new InternalServerErrorResponse(error.toString());
       }
     });
     app.get("/api/files/download/{fileId}", ctx -> {
@@ -157,10 +159,6 @@ public class App {
       }
     });
 
-    app.exception(JsonProcessingException.class, (error, ctx) -> {
-      throw new BadRequestResponse(error.toString());
-    });
-
     app.get("/api/auth/check", ctx -> {
       AuthMiddleware.handle(ctx);
     });
@@ -175,7 +173,13 @@ public class App {
         ctx.json(Map.of("token", token));
       } catch (RuntimeException error) {
         throw new UnauthorizedResponse(error.toString());
+      } catch (Exception error) {
+        throw new InternalServerErrorResponse(error.toString());
       }
+    });
+
+    app.exception(JsonProcessingException.class, (error, ctx) -> {
+      throw new BadRequestResponse(error.toString());
     });
   }
 

@@ -1,0 +1,13 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 300px;
+}
+.login-form__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+  text-wrap: balance;
+  text-align: center;
+}

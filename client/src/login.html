@@ -26,7 +26,20 @@
 
       <main class="app-main">
         <section class="app-page app-page--centered">
-          <div class="app-container"></div>
+          <div class="app-container">
+            <form class="login-form" id="login-form">
+              <div class="login-form__title">Войдите в аккаунт чтобы продолжить</div>
+              <input class="app-input" type="email" placeholder="Email" name="email" required />
+              <input
+                class="app-input"
+                type="password"
+                placeholder="Пароль"
+                name="password"
+                required
+              />
+              <button class="app-button app-button--primary" type="submit">Войти</button>
+            </form>
+          </div>
         </section>
       </main>
     </div>
