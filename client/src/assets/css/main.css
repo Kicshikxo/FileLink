@@ -10,10 +10,22 @@
   appearance: none;
   color-scheme: light;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+::selection {
+  background-color: var(--color-primary-100);
 }
 
 a {
   text-decoration: none;
+  color: var(--color-primary-500);
+  transition: color 0.2s;
+}
+@media (hover: hover) {
+  a:hover {
+    color: var(--color-primary-400);
+  }
 }
 
 .app-layout {
@@ -26,7 +38,7 @@ a {
   min-height: 100dvh;
   max-height: 100dvh;
   overflow: hidden;
-  background: var(--color-gray-100);
+  background-color: var(--color-gray-100);
 }
 .app-header {
   display: flex;
@@ -37,7 +49,7 @@ a {
   width: 100%;
   height: 64px;
   padding: 8px 24px;
-  background: var(--color-gray-50);
+  background-color: var(--color-gray-50);
   border-bottom: 2px solid var(--color-gray-200);
 }
 .app-main {
@@ -46,10 +58,11 @@ a {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  background: var(--px-color-page-background);
+  background-color: var(--px-color-page-background);
 }
 .app-page {
   display: flex;
+  flex-direction: column;
   width: 100%;
   min-height: 100%;
   position: absolute;

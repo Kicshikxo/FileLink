@@ -1,2 +1,2 @@
-import "~/assets/css/main.css";
-import "~/assets/css/rubik.fontface.css";
+import '~/assets/css/main.css'
+import '~/assets/css/rubik.fontface.css'

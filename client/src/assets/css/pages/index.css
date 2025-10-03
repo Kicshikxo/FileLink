@@ -25,15 +25,15 @@
   border-color: var(--color-gray-400);
 }
 
-.file-upload-container__upload-area__icon {
+.file-upload-container__upload-area-icon {
   width: 96px;
   height: 96px;
   color: var(--color-gray-500);
   pointer-events: none;
 }
 
-.file-upload-container__upload-area__title,
-.file-upload-container__upload-area__title--dragover {
+.file-upload-container__upload-area-title,
+.file-upload-container__upload-area-title--dragover {
   font-size: 1.25rem;
   font-weight: bold;
   color: var(--color-gray-600);
@@ -42,12 +42,63 @@
   text-align: center;
 }
 
-.file-upload-container__upload-area__title--dragover {
+.file-upload-container__upload-area-title--dragover {
   display: none;
 }
-.file-upload-container__upload-area--dragover .file-upload-container__upload-area__title {
+.file-upload-container__upload-area--dragover .file-upload-container__upload-area-title {
   display: none;
 }
-.file-upload-container__upload-area--dragover .file-upload-container__upload-area__title--dragover {
+.file-upload-container__upload-area--dragover .file-upload-container__upload-area-title--dragover {
   display: block;
+}
+
+.upload-progress-container,
+.uploaded-files-container {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: clamp(300px, 50%, 600px);
+  margin-top: 32px;
+  gap: 16px;
+}
+
+.upload-progress-container__progress {
+  display: flex;
+  justify-items: start;
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-gray-300);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.upload-progress-container__progress-bar {
+  width: 0%;
+  height: 100%;
+  background-color: var(--color-primary-300);
+  border-radius: 6px;
+  transition: width 0.2s;
+}
+.upload-progress-container__progress-status {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+}
+
+.uploaded-files-container__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+}
+.uploaded-files-container__list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.uploaded-files-container__list-item {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-gray-700);
+  font-weight: bold;
 }
