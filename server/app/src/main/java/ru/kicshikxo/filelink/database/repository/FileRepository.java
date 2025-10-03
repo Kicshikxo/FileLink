@@ -25,6 +25,12 @@ public class FileRepository {
                 : null));
   }
 
+  public static void deleteById(UUID fileId) throws SQLException {
+    Database.update(
+        "DELETE FROM files WHERE file_id = ?",
+        preparedStatement -> preparedStatement.setObject(1, fileId));
+  }
+
   public static List<FileDto> getByUserId(UUID userId) throws SQLException {
     return Database.query(
         "SELECT * FROM files WHERE user_id = ?",

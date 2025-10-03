@@ -139,6 +139,7 @@ public class App {
 
         File[] matchingFiles = uploadsDirectory.listFiles((dir, name) -> name.startsWith(fileId.toString()));
         if (matchingFiles == null || matchingFiles.length == 0) {
+          FileRepository.deleteById(fileId);
           throw new NotFoundResponse("FILE NOT FOUND IN UPLOADS DIRECTORY");
         }
 
