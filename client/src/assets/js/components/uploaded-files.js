@@ -6,20 +6,20 @@ import { formatFileSize } from '~/assets/js/utils'
 import '~/assets/css/components/uploaded-files.css'
 
 export function UploadedFiles(originalElement) {
-  const container = document.createElement('div')
-  container.id = originalElement.id ?? ''
-  container.className = originalElement.className ?? ''
-  container.classList.add('uploaded-files-container')
-  container.innerHTML = /*html*/ `
+  const component = document.createElement('div')
+  component.id = originalElement.id ?? ''
+  component.className = originalElement.className ?? ''
+  component.classList.add('uploaded-files-container')
+  component.innerHTML = /*html*/ `
     <span class="uploaded-files__title">Ваши загруженные файлы</span>
     <span class="uploaded-files__loader">${LoadingIcon}</span>
     <span class="uploaded-files__empty">Файлы не найдены<br>Вы можете загрузить свои файлы <a href="/">здесь</a></span>
     <div class="uploaded-files__list"></div>
   `
 
-  const containerLoader = container.querySelector('.uploaded-files__loader')
-  const containerEmpty = container.querySelector('.uploaded-files__empty')
-  const filesList = container.querySelector('.uploaded-files__list')
+  const containerLoader = component.querySelector('.uploaded-files__loader')
+  const containerEmpty = component.querySelector('.uploaded-files__empty')
+  const filesList = component.querySelector('.uploaded-files__list')
 
   document.addEventListener('filesStateChange', (event) => {
     const { key, value } = event.detail
@@ -69,7 +69,7 @@ export function UploadedFiles(originalElement) {
             await navigator.clipboard.writeText(
               `${window.location.origin}/api/files/download/${file.fileId}`,
             )
-            alert(`Ссылка на файл ${file.fileName} скопирована`)
+            alert(`Ссылка на файл "${file.fileName}" скопирована`)
           } catch (error) {
             console.error(error)
           }
@@ -80,5 +80,5 @@ export function UploadedFiles(originalElement) {
     }
   })
 
-  return container
+  return component
 }

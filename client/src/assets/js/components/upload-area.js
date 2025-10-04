@@ -5,11 +5,11 @@ import { filesState } from '~/assets/js/state/files'
 import '~/assets/css/components/upload-area.css'
 
 export function UploadArea(originalElement) {
-  const container = document.createElement('div')
-  container.id = originalElement.id ?? ''
-  container.className = originalElement.className ?? ''
-  container.classList.add('upload-area-container')
-  container.innerHTML = /*html*/ `
+  const component = document.createElement('div')
+  component.id = originalElement.id ?? ''
+  component.className = originalElement.className ?? ''
+  component.classList.add('upload-area-container')
+  component.innerHTML = /*html*/ `
     <div class="upload-area" >
       <input type="file" hidden multiple data-role="input" />
       <span class="upload-icon">${UploadIcon}</span>
@@ -19,22 +19,22 @@ export function UploadArea(originalElement) {
     </div>
   `
 
-  const uploadArea = container.querySelector('.upload-area')
+  const uploadArea = component.querySelector('.upload-area')
   const uploadAreaInput = uploadArea.querySelector('[data-role="input"]')
 
-  container.addEventListener('click', () => {
+  component.addEventListener('click', () => {
     if (filesState.uploading) return
     uploadAreaInput.click()
   })
 
-  container.addEventListener('dragover', (event) => {
+  component.addEventListener('dragover', (event) => {
     event.preventDefault()
     uploadArea.classList.add('upload-area--dragover')
   })
-  container.addEventListener('dragleave', () =>
+  component.addEventListener('dragleave', () =>
     uploadArea.classList.remove('upload-area--dragover'),
   )
-  container.addEventListener('drop', (event) => {
+  component.addEventListener('drop', (event) => {
     event.preventDefault()
     uploadArea.classList.remove('upload-area--dragover')
     if (filesState.uploading) return
@@ -47,6 +47,15 @@ export function UploadArea(originalElement) {
 
   async function handleFilesInput(files) {
     if (!files.length) return
+
+    const maxFileSize = 100 * 1024 * 1024
+    for (const file of files) {
+      if (file.size > maxFileSize) {
+        alert(`Файл "${file.name}" превышает 100 МБ и не может быть загружен.`)
+        return
+      }
+    }
+
     filesState.uploading = true
     filesState.progress = 0
 
@@ -69,5 +78,5 @@ export function UploadArea(originalElement) {
     }
   })
 
-  return container
+  return component
 }

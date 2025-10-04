@@ -5,11 +5,11 @@ import '~/assets/css/components/file-statistics.css'
 import { formatDate, formatFileSize } from '~/assets/js/utils'
 
 export function FileStatistics(originalElement) {
-  const container = document.createElement('div')
-  container.id = originalElement.id ?? ''
-  container.className = originalElement.className ?? ''
-  container.classList.add('file-statistics-container')
-  container.innerHTML = /*html*/ `
+  const component = document.createElement('div')
+  component.id = originalElement.id ?? ''
+  component.className = originalElement.className ?? ''
+  component.classList.add('file-statistics-container')
+  component.innerHTML = /*html*/ `
     <span class="file-statistics__title">Статистика файла</span>
     <span class="file-statistics__info">
       <span class="file-statistics__info-item">Название: <span class="file-statistics__info-item--name"></span></span>
@@ -24,17 +24,17 @@ export function FileStatistics(originalElement) {
     </div>
   `
 
-  const fileInfo = container.querySelector('.file-statistics__info')
+  const fileInfo = component.querySelector('.file-statistics__info')
 
-  const fileName = container.querySelector('.file-statistics__info-item--name')
-  const fileSize = container.querySelector('.file-statistics__info-item--size')
-  const fileDate = container.querySelector('.file-statistics__info-item--date')
+  const fileName = component.querySelector('.file-statistics__info-item--name')
+  const fileSize = component.querySelector('.file-statistics__info-item--size')
+  const fileDate = component.querySelector('.file-statistics__info-item--date')
 
-  const containerLoader = container.querySelector('.file-statistics__loader')
-  const containerEmpty = container.querySelector('.file-statistics__empty')
+  const containerLoader = component.querySelector('.file-statistics__loader')
+  const containerEmpty = component.querySelector('.file-statistics__empty')
 
-  const chartTitle = container.querySelector('.file-statistics__chart-title')
-  const chart = container.querySelector('.file-statistics__chart')
+  const chartTitle = component.querySelector('.file-statistics__chart-title')
+  const chart = component.querySelector('.file-statistics__chart')
 
   let chartInstance = null
 
@@ -102,5 +102,5 @@ export function FileStatistics(originalElement) {
     }
   })
 
-  return container
+  return component
 }

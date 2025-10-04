@@ -1,11 +1,11 @@
 import '~/assets/css/components/progress-bar.css'
 
 export function ProgressBar(originalElement) {
-  const container = document.createElement('div')
-  container.id = originalElement.id ?? ''
-  container.className = originalElement.className ?? ''
-  container.classList.add('progress-bar-container')
-  container.innerHTML = /*html*/ `
+  const component = document.createElement('div')
+  component.id = originalElement.id ?? ''
+  component.className = originalElement.className ?? ''
+  component.classList.add('progress-bar-container')
+  component.innerHTML = /*html*/ `
     <div class="progress-bar">
       <div class="progress-bar__line"></div>
     </div>
@@ -14,9 +14,9 @@ export function ProgressBar(originalElement) {
     </div>
   `
 
-  const progressBar = container.querySelector('.progress-bar')
+  const progressBar = component.querySelector('.progress-bar')
   const progressBarLine = progressBar.querySelector('.progress-bar__line')
-  const progressPercent = container.querySelector('#progress-percent')
+  const progressPercent = component.querySelector('#progress-percent')
 
   document.addEventListener('filesStateChange', (event) => {
     const { key, value } = event.detail
@@ -26,5 +26,5 @@ export function ProgressBar(originalElement) {
     }
   })
 
-  return container
+  return component
 }
