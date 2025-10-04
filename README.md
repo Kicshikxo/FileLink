@@ -19,15 +19,15 @@ FileLink - это сервис для загрузки, хранения и об
 
 Основные функции:
 
-- Загрузка файлов до 100 МБ.
-- Просмотр списка загруженных файлов.
-- Статистика скачиваний файлов по дням.
-- Безопасная авторизация и аутентификация.
-- Автоматическая очистка файлов, которые не скачивались более суток.
+- Загрузка файлов до 100 МБ
+- Просмотр списка загруженных файлов
+- Статистика скачиваний файлов по дням
+- Безопасная авторизация и аутентификация
+- Автоматическая очистка файлов, которые не скачивались более суток
 
-## Демо
+## Попробовать прямо сейчас
 
-Вы можете использовать FileLink прямо в браузере:
+Используйте FileLink прямо в браузере:
 
 - [filelink.kicshikxo.ru](https://filelink.kicshikxo.ru)
 
@@ -47,6 +47,74 @@ FileLink - это сервис для загрузки, хранения и об
 ```bash
 git clone https://github.com/Kicshikxo/FileLink.git
 cd FileLink
+```
+
+### Frontend (клиент)
+
+Файлы клиента находятся в папке `client`.
+
+#### Запуск в режиме разработки:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### Сборка релизной версии:
+
+```bash
+npm run build
+npm run preview
+```
+
+Настройка порта и сервера API:
+
+```bash
+export PORT=3000
+export API_URL=http://localhost:7070
+npm run preview
+```
+
+### Backend (сервер)
+
+Сервер находится в папке `server`.
+
+#### Переменные окружения
+
+Создайте файл .env рядом с сервером или используйте export:
+
+```bash
+export DB_URL=jdbc:postgresql://localhost:5432/postgres
+export DB_USER=postgres
+export DB_PASSWORD=password
+
+export AUTH_COOKIE_NAME="filelink-token"
+export JWT_SECRET_KEY="yLZf4GOP+xk+eZ60VmpVDPhxRjcpuuWh8FWM22ZIjV0="
+
+export PORT=7070
+export UPLOADS_DIRECTORY="uploads"
+```
+
+[Пример .env файла](https://github.com/Kicshikxo/FileLink/blob/main/server/app/.env.example)
+
+#### Запуск сервера:
+
+```bash
+cd server
+gradle run
+```
+
+#### Сборка портативного `.jar` файла:
+
+```bash
+gradle build
+```
+
+После сборки файл `filelink.jar` появится в `server/app/build/libs/`. Запуск:
+
+```bash
+java -jar filelink.jar
 ```
 
 ## Лицензия
