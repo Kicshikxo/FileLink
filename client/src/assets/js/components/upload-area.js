@@ -10,7 +10,7 @@ export function UploadArea(originalElement) {
   component.className = originalElement.className ?? ''
   component.classList.add('upload-area-container')
   component.innerHTML = /*html*/ `
-    <div class="upload-area" >
+    <div class="upload-area">
       <input type="file" hidden multiple data-role="input" />
       <span class="upload-icon">${UploadIcon}</span>
       <p class="upload-text upload-text--default">Перетащите файлы или нажмите, чтобы выбрать</p>
@@ -48,12 +48,19 @@ export function UploadArea(originalElement) {
   async function handleFilesInput(files) {
     if (!files.length) return
 
-    const maxFileSize = 100 * 1024 * 1024
+    const maxFileSize = 100 * 1024 * 1024 // 100 MB
     for (const file of files) {
       if (file.size > maxFileSize) {
         alert(`Файл "${file.name}" превышает 100 МБ и не может быть загружен.`)
         return
       }
+    }
+
+    const maxRequestSize = 1024 * 1024 * 1024 // 1 GB
+    const totalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0)
+    if (totalSize > maxRequestSize) {
+      alert('Суммарный размер выбранных файлов превышает 1 ГБ и не может быть загружен.')
+      return
     }
 
     filesState.uploading = true

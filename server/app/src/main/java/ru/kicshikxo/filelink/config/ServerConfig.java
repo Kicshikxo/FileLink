@@ -2,6 +2,7 @@ package ru.kicshikxo.filelink.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.config.JavalinConfig;
+import io.javalin.config.SizeUnit;
 
 public class ServerConfig {
   private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -16,5 +17,8 @@ public class ServerConfig {
         it.anyHost();
       });
     });
+
+    config.jetty.multipartConfig.maxFileSize(100, SizeUnit.MB);
+    config.jetty.multipartConfig.maxTotalRequestSize(1, SizeUnit.GB);
   }
 }
