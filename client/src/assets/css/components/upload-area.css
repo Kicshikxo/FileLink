@@ -1,0 +1,69 @@
+.upload-area-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.upload-area {
+  width: 100%;
+  height: 200px;
+  border: 8px dashed var(--color-gray-300);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.upload-area--dragover {
+  border-color: var(--color-gray-500);
+}
+.upload-area--uploading {
+  animation: upload-area-border-pulse 0.8s ease-in-out infinite alternate;
+}
+.upload-area:hover {
+  border-color: var(--color-gray-400);
+}
+
+@keyframes upload-area-border-pulse {
+  0% {
+    border-color: var(--color-gray-500);
+  }
+  100% {
+    border-color: var(--color-gray-300);
+  }
+}
+
+.upload-icon {
+  width: 96px;
+  height: 96px;
+  color: var(--color-gray-500);
+  pointer-events: none;
+}
+
+.upload-text {
+  display: none;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+  pointer-events: none;
+  text-wrap: balance;
+  text-align: center;
+}
+
+.upload-text--default {
+  display: block;
+}
+
+.upload-area--dragover .upload-text--default,
+.upload-area--uploading .upload-text--default {
+  display: none;
+}
+.upload-area--dragover .upload-text--dragover {
+  display: block;
+}
+.upload-area--uploading .upload-text--uploading {
+  display: block;
+}

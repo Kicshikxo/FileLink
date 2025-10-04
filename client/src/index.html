@@ -3,13 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="preload"
-      href="/fonts/Rubik-Regular.ttf"
-      as="font"
-      type="font/truetype"
-      crossorigin
-    />
+    <link rel="preload" href="/fonts/Rubik-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FileLink</title>
   </head>
@@ -24,98 +18,23 @@
         <a href="/dashboard" style="margin-right: auto">
           <button class="app-button app-button--text">Мои файлы</button>
         </a>
-        <div></div>
+        <button class="app-button app-button--text app-logout-button">Выход</button>
       </header>
 
       <main class="app-main">
         <section class="app-page app-page--centered">
-          <div class="app-container file-upload-container">
-            <div class="file-upload-container__upload-area" id="upload-area">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="96"
-                height="96"
-                viewBox="0 0 24 24"
-                class="file-upload-container__upload-area-icon"
-              >
-                <mask id="SVGNAcuOpby">
-                  <g
-                    fill="none"
-                    stroke="#fff"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  >
-                    <path
-                      fill="#fff"
-                      fill-opacity="0"
-                      stroke-dasharray="64"
-                      stroke-dashoffset="64"
-                      d="M13.5 3l5.5 5.5v11.5c0 0.55 -0.45 1 -1 1h-12c-0.55 0 -1 -0.45 -1 -1v-16c0 -0.55 0.45 -1 1 -1Z"
-                    >
-                      <animate
-                        fill="freeze"
-                        attributeName="fill-opacity"
-                        begin="0.6s"
-                        dur="0.5s"
-                        values="0;1"
-                      />
-                      <animate
-                        fill="freeze"
-                        attributeName="stroke-dashoffset"
-                        dur="0.6s"
-                        values="64;0"
-                      />
-                    </path>
-                    <path fill="#000" stroke="#000" d="M14.5 3.5l0 4.5l4.5 0z" opacity="0">
-                      <set fill="freeze" attributeName="opacity" begin="0.6s" to="1" />
-                    </path>
-                    <path d="M13.5 3l5.5 5.5" opacity="0">
-                      <set fill="freeze" attributeName="opacity" begin="0.6s" to="1" />
-                    </path>
-                    <path fill="#000" stroke="none" d="M12 18l4 0h-2.5v0h-3v0h-2.5z">
-                      <animate
-                        fill="freeze"
-                        attributeName="d"
-                        begin="1.1s"
-                        dur="0.2s"
-                        values="M12 18l4 0h-2.5v0h-3v0h-2.5z;M12 11l4 4h-2.5v3h-3v-3h-2.5Z"
-                      />
-                    </path>
-                  </g>
-                </mask>
-                <rect width="24" height="24" fill="currentColor" mask="url(#SVGNAcuOpby)" />
-              </svg>
-
-              <span class="file-upload-container__upload-area-title">
-                Перетащите файл или нажмите, чтобы выбрать
-              </span>
-              <span class="file-upload-container__upload-area-title--dragover">
-                Отпустите файл чтобы загрузить
-              </span>
-            </div>
-
-            <input type="file" id="file-upload-input" multiple style="display: none" />
-          </div>
-
-          <div class="app-container upload-progress-container" id="upload-progress-container">
-            <div class="upload-progress-container__progress">
-              <div class="upload-progress-container__progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="upload-progress-container__progress-status">
-              Загрузка <span id="progress-percent">0</span>%
-            </div>
-          </div>
-
-          <div class="app-container uploaded-files-container" id="uploaded-files-container">
-            <span class="uploaded-files-container__title">Загруженные файлы</span>
-            <div class="uploaded-files-container__list" id="uploaded-files-list"></div>
-          </div>
+          <div data-component="upload-area" id="index-upload-area" class="app-container"></div>
+          <div data-component="progress-bar" id="index-progress-bar" class="app-container"></div>
+          <div
+            data-component="uploaded-files"
+            id="index-uploaded-files"
+            class="app-container"
+          ></div>
         </section>
       </main>
     </div>
 
     <script type="module" src="assets/js/main.js"></script>
-    <script type="module" src="assets/js/index.js"></script>
+    <script type="module" src="assets/js/pages/index.js"></script>
   </body>
 </html>

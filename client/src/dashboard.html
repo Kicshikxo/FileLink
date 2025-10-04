@@ -3,13 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="preload"
-      href="/fonts/Rubik-Regular.ttf"
-      as="font"
-      type="font/truetype"
-      crossorigin
-    />
+    <link rel="preload" href="/fonts/Rubik-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FileLink dashboard</title>
   </head>
@@ -22,20 +16,21 @@
         <a href="/dashboard" style="margin-right: auto">
           <button class="app-button app-button--text" disabled>Мои файлы</button>
         </a>
-        <div></div>
+        <button class="app-button app-button--text app-logout-button">Выход</button>
       </header>
 
       <main class="app-main">
         <section class="app-page app-page--centered">
-          <div class="app-container uploaded-files-container">
-            <span class="uploaded-files-container__title">Загруженные файлы</span>
-            <div class="uploaded-files-container__list" id="uploaded-files-list"></div>
-          </div>
+          <div
+            data-component="uploaded-files"
+            id="dashboard-uploaded-files"
+            class="app-container"
+          ></div>
         </section>
       </main>
     </div>
 
     <script type="module" src="assets/js/main.js"></script>
-    <script type="module" src="assets/js/dashboard.js"></script>
+    <script type="module" src="assets/js/pages/dashboard.js"></script>
   </body>
 </html>

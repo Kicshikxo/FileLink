@@ -2,9 +2,6 @@ package ru.kicshikxo.filelink;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +21,7 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UnauthorizedResponse;
 import io.javalin.http.UploadedFile;
 import io.javalin.http.util.NaiveRateLimit;
+import io.javalin.util.FileUtil;
 import ru.kicshikxo.filelink.auth.AuthMiddleware;
 import ru.kicshikxo.filelink.auth.AuthService;
 import ru.kicshikxo.filelink.auth.dto.LoginRequestDto;
@@ -75,33 +73,22 @@ public class App {
           uploadsDirectory.mkdirs();
         }
 
-        List<Map<String, Object>> results = new ArrayList<>();
+        List<FileDto> results = new ArrayList<>();
 
-        for (UploadedFile file : uploadedFiles) {
+        for (UploadedFile uploadedFile : uploadedFiles) {
           UUID fileUuid = UUID.randomUUID();
           String extension = "";
-          int dotIndex = file.filename().lastIndexOf('.');
+          int dotIndex = uploadedFile.filename().lastIndexOf('.');
           if (dotIndex != -1) {
-            extension = file.filename().substring(dotIndex);
+            extension = uploadedFile.filename().substring(dotIndex);
           }
 
-          File savedFile = new java.io.File(uploadsDirectory, fileUuid + extension);
+          FileUtil.streamToFile(uploadedFile.content(),
+              new File(uploadsDirectory, fileUuid + extension).toString());
 
-          try (InputStream inputStream = file.content();
-              OutputStream outputStream = new FileOutputStream(savedFile)) {
-            byte[] buffer = new byte[8192];
-            int read;
-            while ((read = inputStream.read(buffer)) != -1) {
-              outputStream.write(buffer, 0, read);
-            }
-          }
+          FileRepository.createWithId(fileUuid, userId, uploadedFile.filename(), uploadedFile.size());
 
-          FileRepository.createWithId(fileUuid, userId, file.filename(), file.size());
-
-          results.add(Map.of(
-              "fileId", fileUuid.toString(),
-              "fileName", file.filename(),
-              "fileSize", file.size()));
+          results.add(FileRepository.getById(fileUuid));
         }
 
         ctx.json(results);
@@ -176,6 +163,12 @@ public class App {
       } catch (Exception error) {
         throw new InternalServerErrorResponse(error.toString());
       }
+    });
+    app.get("/api/auth/logout", ctx -> {
+      NaiveRateLimit.requestPerTimeUnit(ctx, 2, TimeUnit.MINUTES);
+
+      ctx.removeCookie("filelink-token");
+      ctx.json(Map.of("success", true));
     });
 
     app.exception(JsonProcessingException.class, (error, ctx) -> {

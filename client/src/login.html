@@ -3,13 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link
-      rel="preload"
-      href="/fonts/Rubik-Regular.ttf"
-      as="font"
-      type="font/truetype"
-      crossorigin
-    />
+    <link rel="preload" href="/fonts/Rubik-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FileLink login</title>
   </head>
@@ -17,7 +11,9 @@
     <div class="app-layout">
       <header class="app-header">
         <a href="/">
-          <button class="app-button app-button--text" style="font-size: 1.25rem">FileLink</button>
+          <button class="app-button app-button--text" style="font-size: 1.25rem" disabled>
+            FileLink
+          </button>
         </a>
         <a href="/dashboard" style="margin-right: auto">
           <button class="app-button app-button--text" disabled>Мои файлы</button>
@@ -29,12 +25,20 @@
           <div class="app-container">
             <form class="login-form" id="login-form">
               <div class="login-form__title">Войдите в аккаунт чтобы продолжить</div>
-              <input class="app-input" type="email" placeholder="Email" name="email" required />
+              <input
+                class="app-input"
+                type="email"
+                placeholder="Email"
+                name="email"
+                autocomplete="email"
+                required
+              />
               <input
                 class="app-input"
                 type="password"
                 placeholder="Пароль"
                 name="password"
+                autocomplete="current-password"
                 required
               />
               <button class="app-button app-button--primary" type="submit">Войти</button>
@@ -45,6 +49,6 @@
     </div>
 
     <script type="module" src="assets/js/main.js"></script>
-    <script type="module" src="assets/js/login.js"></script>
+    <script type="module" src="assets/js/pages/login.js"></script>
   </body>
 </html>

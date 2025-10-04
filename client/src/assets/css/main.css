@@ -72,3 +72,6 @@ a {
   justify-content: center;
   align-items: center;
 }
+.app-logout-button {
+  display: none;
+}

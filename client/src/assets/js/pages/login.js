@@ -1,6 +1,5 @@
-import axios from 'axios'
-
 import '~/assets/css/pages/login.css'
+import { login } from '~/assets/js/api/auth'
 
 const loginForm = document.querySelector('#login-form')
 
@@ -9,14 +8,12 @@ loginForm.addEventListener('submit', async (event) => {
 
   const formData = new FormData(loginForm)
   try {
-    const response = await axios.post('/api/auth/login', {
-      email: formData.get('email'),
-      password: formData.get('password'),
-    })
-    if (response.data.token) {
+    const success = await login(formData.get('email'), formData.get('password'))
+    if (success) {
       window.location.href = '/'
     }
   } catch (error) {
     console.error(error)
+    alert(`Ошибка при входе в систему: ${error.response.data.title}`)
   }
 })
