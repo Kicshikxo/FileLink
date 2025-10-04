@@ -18,7 +18,7 @@ export function FileStatistics(originalElement) {
     </span>
     <span class="file-statistics__loader">${LoadingIcon}</span>
     <span class="file-statistics__empty">Файл не найден или нет статистики</span>
-    <span class="file-statistics__chart-title">Статистика загрузок</span>
+    <span class="file-statistics__chart-title">Количество загрузок</span>
     <div style="width: 100%; height: 400px;">
       <canvas class="file-statistics__chart"></canvas>
     </div>
