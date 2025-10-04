@@ -29,7 +29,7 @@
 
 @keyframes upload-area-border-pulse {
   0% {
-    border-color: var(--color-gray-500);
+    border-color: var(--color-gray-400);
   }
   100% {
     border-color: var(--color-gray-300);

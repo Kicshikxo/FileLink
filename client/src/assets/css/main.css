@@ -59,7 +59,6 @@ a {
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;
-  background-color: var(--px-color-page-background);
 }
 .app-page {
   display: flex;
@@ -72,6 +71,22 @@ a {
   justify-content: center;
   align-items: center;
 }
+
+.app-page-loader {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+  background-color: var(--color-gray-100);
+}
+.app-page-loader__icon {
+  width: 96px;
+  height: 96px;
+  color: var(--color-gray-500);
+  pointer-events: none;
+}
+
 .app-logout-button {
   display: none;
 }
