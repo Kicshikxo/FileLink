@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import io.javalin.http.Context;
 import io.javalin.http.UnauthorizedResponse;
+import ru.kicshikxo.filelink.database.repository.UserRepository;
 import ru.kicshikxo.filelink.service.AuthService;
 
 public class AuthMiddleware {
@@ -21,7 +22,14 @@ public class AuthMiddleware {
 
     try {
       UUID userId = authService.verifyToken(token);
+
+      if (UserRepository.getById(userId) == null) {
+        throw new UnauthorizedResponse("USER NOT FOUND");
+      }
+
       ctx.attribute("userId", userId);
+    } catch (UnauthorizedResponse error) {
+      throw error;
     } catch (Exception error) {
       throw new UnauthorizedResponse("INVALID TOKEN");
     }

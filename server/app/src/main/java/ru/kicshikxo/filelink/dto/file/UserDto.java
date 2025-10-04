@@ -6,17 +6,17 @@ import java.util.UUID;
 public class UserDto {
   private UUID userId;
   private String email;
-  private String password_hash;
+  private String passwordHash;
   private Timestamp createdAt;
   private Timestamp updatedAt;
 
   public UserDto() {
   }
 
-  public UserDto(UUID userId, String email, String password_hash, Timestamp createdAt, Timestamp updatedAt) {
+  public UserDto(UUID userId, String email, String passwordHash, Timestamp createdAt, Timestamp updatedAt) {
     this.userId = userId;
     this.email = email;
-    this.password_hash = password_hash;
+    this.passwordHash = passwordHash;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -29,8 +29,8 @@ public class UserDto {
     return email;
   }
 
-  public String getPassword_hash() {
-    return password_hash;
+  public String getPasswordHash() {
+    return passwordHash;
   }
 
   public Timestamp getCreatedAt() {

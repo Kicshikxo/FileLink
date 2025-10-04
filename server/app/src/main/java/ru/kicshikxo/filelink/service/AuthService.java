@@ -31,7 +31,7 @@ public class AuthService {
       throw new RuntimeException("INVALID CREDENTIALS");
     }
 
-    if (!BCrypt.checkpw(password, user.getPassword_hash())) {
+    if (!BCrypt.checkpw(password, user.getPasswordHash())) {
       throw new RuntimeException("INVALID CREDENTIALS");
     }
 
