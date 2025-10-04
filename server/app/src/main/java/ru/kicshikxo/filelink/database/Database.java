@@ -22,7 +22,7 @@ public class Database {
     R apply(T t) throws SQLException;
   }
 
-  private static final Dotenv dotenv = Dotenv.load();
+  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
   private static final String URL = dotenv.get("DATABASE_URL");
   private static final String USER = dotenv.get("DATABASE_USER");

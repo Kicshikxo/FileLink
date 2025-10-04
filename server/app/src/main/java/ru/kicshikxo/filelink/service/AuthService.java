@@ -17,7 +17,7 @@ import ru.kicshikxo.filelink.database.repository.UserRepository;
 import ru.kicshikxo.filelink.dto.file.UserDto;
 
 public class AuthService {
-  private static final Dotenv dotenv = Dotenv.load();
+  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
   public static final String AUTH_COOKIE_NAME = dotenv.get("AUTH_COOKIE_NAME", "filelink-token");
   private static final String JWT_SECRET_KEY = dotenv.get("JWT_SECRET_KEY");

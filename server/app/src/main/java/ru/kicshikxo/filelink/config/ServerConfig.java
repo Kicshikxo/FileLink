@@ -4,7 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import io.javalin.config.JavalinConfig;
 
 public class ServerConfig {
-  private static final Dotenv dotenv = Dotenv.load();
+  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
   public static final int PORT = Integer.parseInt(dotenv.get("PORT", "7070"));
 

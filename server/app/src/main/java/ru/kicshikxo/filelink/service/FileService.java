@@ -17,7 +17,7 @@ import ru.kicshikxo.filelink.dto.file.DailyDownloadStatsDto;
 import ru.kicshikxo.filelink.dto.file.FileDto;
 
 public class FileService {
-  private static final Dotenv dotenv = Dotenv.load();
+  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
   private static final String UPLOADS_DIRECTORY = dotenv.get("UPLOADS_DIRECTORY", "uploads");
 
