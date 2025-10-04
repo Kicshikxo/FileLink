@@ -1,0 +1,81 @@
+package ru.kicshikxo.filelink.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import io.javalin.Javalin;
+import io.javalin.http.Context;
+import io.javalin.http.InternalServerErrorResponse;
+import io.javalin.http.NotFoundResponse;
+import io.javalin.http.UploadedFile;
+import io.javalin.http.util.NaiveRateLimit;
+import ru.kicshikxo.filelink.database.repository.FileDownloadsRepository;
+import ru.kicshikxo.filelink.database.repository.FileRepository;
+import ru.kicshikxo.filelink.dto.file.FileDto;
+import ru.kicshikxo.filelink.middleware.AuthMiddleware;
+import ru.kicshikxo.filelink.service.FileService;
+
+public class FileController {
+  private final FileService fileService = new FileService();
+
+  public void registerRoutes(Javalin app) {
+    app.before("/api/files/list", new AuthMiddleware()::handle);
+    app.before("/api/files/upload", new AuthMiddleware()::handle);
+
+    app.get("/api/files/list", this::list);
+    app.post("/api/files/upload", this::upload);
+    app.get("/api/files/download/{fileId}", this::download);
+  }
+
+  private void upload(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 2, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+      List<UploadedFile> uploadedFiles = ctx.uploadedFiles();
+      ctx.json(fileService.saveFiles(userId, uploadedFiles));
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
+  private void list(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+      List<FileDto> files = fileService.getFiles(userId);
+
+      ctx.json(files);
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
+  private void download(Context ctx) throws IOException, SQLException {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
+
+    try {
+      UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
+
+      FileDto fileDto = FileRepository.getById(fileId);
+      if (fileDto == null) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      File savedFile = fileService.getFile(fileId);
+      ctx.contentType("application/octet-stream");
+      ctx.header("Content-Disposition", "attachment; filename=\"" + fileDto.getFileName() + "\"");
+      ctx.result(new FileInputStream(savedFile));
+
+      FileDownloadsRepository.createForFileId(fileId);
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+}

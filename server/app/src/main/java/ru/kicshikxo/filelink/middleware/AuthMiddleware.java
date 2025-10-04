@@ -1,24 +1,15 @@
-package ru.kicshikxo.filelink.auth;
+package ru.kicshikxo.filelink.middleware;
 
-import java.util.List;
 import java.util.UUID;
 
 import io.javalin.http.Context;
 import io.javalin.http.UnauthorizedResponse;
-import ru.kicshikxo.filelink.auth.utils.JwtUtils;
+import ru.kicshikxo.filelink.service.AuthService;
 
 public class AuthMiddleware {
-  public static void handle(Context ctx) throws Exception {
-    handle(ctx, List.of());
-  }
+  private final AuthService authService = new AuthService();
 
-  public static void handle(Context ctx, List<String> excludedPaths) throws Exception {
-    for (String exclude : excludedPaths) {
-      if (ctx.path().startsWith(exclude)) {
-        return;
-      }
-    }
-
+  public void handle(Context ctx) {
     String headerToken = ctx.header("Authorization");
     String cookieToken = ctx.cookie("filelink-token");
 
@@ -29,7 +20,7 @@ public class AuthMiddleware {
     }
 
     try {
-      UUID userId = JwtUtils.validateTokenAndGetUserId(token);
+      UUID userId = authService.verifyToken(token);
       ctx.attribute("userId", userId);
     } catch (Exception error) {
       throw new UnauthorizedResponse("INVALID TOKEN");

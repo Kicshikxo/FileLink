@@ -1,4 +1,4 @@
-package ru.kicshikxo.filelink.auth.dto;
+package ru.kicshikxo.filelink.dto.auth;
 
 public class LoginRequestDto {
   private String email;

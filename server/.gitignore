@@ -6,3 +6,6 @@ build
 
 # Ignore env file
 .env
+
+# Ignore uploads folder
+app/uploads

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ru.kicshikxo.filelink.database.Database;
-import ru.kicshikxo.filelink.database.dto.FileDto;
+import ru.kicshikxo.filelink.dto.file.FileDto;
 
 public class FileRepository {
   public static FileDto getById(UUID fileId) throws SQLException {

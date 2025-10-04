@@ -1,4 +1,4 @@
-package ru.kicshikxo.filelink.database.dto;
+package ru.kicshikxo.filelink.dto.file;
 
 import java.sql.Timestamp;
 import java.util.UUID;

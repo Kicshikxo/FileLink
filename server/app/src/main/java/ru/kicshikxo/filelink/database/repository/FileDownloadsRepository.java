@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.UUID;
 
 import ru.kicshikxo.filelink.database.Database;
-import ru.kicshikxo.filelink.database.dto.FileDownloadDto;
+import ru.kicshikxo.filelink.dto.file.FileDownloadDto;
 
-public class FileDownloadRepository {
+public class FileDownloadsRepository {
   public static void createForFileId(UUID fileId) throws SQLException {
     Database.update(
         "INSERT INTO file_downloads (file_id) VALUES (?)",

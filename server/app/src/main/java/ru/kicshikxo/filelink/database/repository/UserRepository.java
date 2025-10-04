@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 import ru.kicshikxo.filelink.database.Database;
-import ru.kicshikxo.filelink.database.dto.UserDto;
+import ru.kicshikxo.filelink.dto.file.UserDto;
 
 public class UserRepository {
   public static UserDto getById(UUID userId) throws SQLException {
