@@ -16,7 +16,6 @@ document.addEventListener('authStateChange', async (event) => {
     } catch (error) {
       filesState.statistics = null
       console.error(error)
-      alert(`Ошибка получения файлов: ${error.response.data.title}`)
     }
   }
 })

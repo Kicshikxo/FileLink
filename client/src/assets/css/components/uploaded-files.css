@@ -34,11 +34,17 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  color: var(--color-gray-700);
+  color: var(--color-gray-600);
   font-weight: bold;
   border: 1px solid var(--color-gray-200);
   border-radius: 6px;
   padding: 8px 16px;
+}
+.uploaded-files__list-item__name {
+  word-break: break-all;
+}
+.uploaded-files__list-item__size {
+  color: var(--color-gray-500);
 }
 .uploaded-files__list-item__buttons {
   display: flex;

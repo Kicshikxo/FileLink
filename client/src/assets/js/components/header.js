@@ -16,7 +16,7 @@ export function Header(originalElement) {
     <a href="/dashboard" style="margin-right: auto">
       <button class="app-button app-button--text">Мои файлы</button>
     </a>
-    <button class="app-button app-button--text app-logout-button">Выход</button>
+    <button class="app-button app-button--text app-logout-button">Выйти</button>
   `
 
   const logoutButton = container.querySelector('.app-logout-button')

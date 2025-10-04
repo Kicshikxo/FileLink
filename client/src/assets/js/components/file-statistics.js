@@ -82,11 +82,11 @@ export function FileStatistics(originalElement) {
     const { key, value } = event.detail
     if (key === 'statistics') {
       containerLoader.style.display = 'none'
-      containerEmpty.style.display = value.data?.length ? 'none' : 'block'
-      chartTitle.style.display = value.data?.length ? 'block' : 'none'
-      chart.style.display = value.data?.length ? 'block' : 'none'
+      containerEmpty.style.display = value?.data?.length ? 'none' : 'block'
+      chartTitle.style.display = value?.data?.length ? 'block' : 'none'
+      chart.style.display = value?.data?.length ? 'block' : 'none'
 
-      if (value.file.fileName && value.file.fileSize && value.file.createdAt) {
+      if (value?.file?.fileName && value?.file?.fileSize && value?.file?.createdAt) {
         fileInfo.style.display = 'flex'
 
         fileName.textContent = value.file.fileName
@@ -96,7 +96,9 @@ export function FileStatistics(originalElement) {
         fileInfo.style.display = 'none'
       }
 
-      renderChart(value.data)
+      if (value?.data) {
+        renderChart(value.data)
+      }
     }
   })
 
