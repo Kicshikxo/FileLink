@@ -3,11 +3,11 @@ import { logout } from '~/assets/js/api/auth'
 import '~/assets/css/components/progress-bar.css'
 
 export function Header(originalElement) {
-  const headerContainer = document.createElement('header')
-  headerContainer.id = originalElement.id ?? ''
-  headerContainer.className = originalElement.className ?? ''
-  headerContainer.classList.add('app-header')
-  headerContainer.innerHTML = /*html*/ `
+  const container = document.createElement('header')
+  container.id = originalElement.id ?? ''
+  container.className = originalElement.className ?? ''
+  container.classList.add('app-header')
+  container.innerHTML = /*html*/ `
     <a href="/">
       <button class="app-button app-button--text" style="font-size: 1.25rem">
         FileLink
@@ -19,7 +19,7 @@ export function Header(originalElement) {
     <button class="app-button app-button--text app-logout-button">Выход</button>
   `
 
-  const logoutButton = headerContainer.querySelector('.app-logout-button')
+  const logoutButton = container.querySelector('.app-logout-button')
 
   document.addEventListener('authStateChange', async (event) => {
     const { key, value } = event.detail
@@ -41,5 +41,5 @@ export function Header(originalElement) {
     }
   })
 
-  return headerContainer
+  return container
 }

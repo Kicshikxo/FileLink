@@ -11,7 +11,9 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UploadedFile;
 import io.javalin.util.FileUtil;
+import ru.kicshikxo.filelink.database.repository.FileDownloadsRepository;
 import ru.kicshikxo.filelink.database.repository.FileRepository;
+import ru.kicshikxo.filelink.dto.file.DailyDownloadStatsDto;
 import ru.kicshikxo.filelink.dto.file.FileDto;
 
 public class FileService {
@@ -32,7 +34,7 @@ public class FileService {
       throw new NotFoundResponse("UPLOADS DIRECTORY NOT FOUND");
     }
 
-    File[] matchingFiles = uploadsDirectory.listFiles((dir, name) -> name.startsWith(fileId.toString()));
+    File[] matchingFiles = uploadsDirectory.listFiles((directory, name) -> name.startsWith(fileId.toString()));
     if (matchingFiles == null || matchingFiles.length == 0) {
       FileRepository.deleteById(fileId);
       throw new NotFoundResponse("FILE NOT FOUND IN UPLOADS DIRECTORY");
@@ -43,6 +45,21 @@ public class FileService {
 
   public List<FileDto> getFiles(UUID userId) throws SQLException {
     return FileRepository.getByUserId(userId);
+  }
+
+  public void deleteFile(UUID fileId) throws SQLException {
+    FileDto fileDto = FileRepository.getById(fileId);
+    if (fileDto == null) {
+      throw new NotFoundResponse("FILE NOT FOUND");
+    }
+
+    File file = getFile(fileId);
+    file.delete();
+    FileRepository.deleteById(fileId);
+  }
+
+  public List<DailyDownloadStatsDto> getFileStatistics(UUID fileId, int days) throws SQLException {
+    return FileDownloadsRepository.getFileDownloadStatisticsById(fileId, days);
   }
 
   public List<FileDto> saveFiles(UUID userId, List<UploadedFile> uploadedFiles) throws SQLException {

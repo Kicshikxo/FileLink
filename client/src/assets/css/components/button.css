@@ -22,6 +22,15 @@
   opacity: 0.75;
 }
 
+.app-button--small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+.app-button--large {
+  padding: 0.75rem 1rem;
+  font-size: 1.25rem;
+}
+
 .app-button--text {
   color: var(--button-color);
   background-color: transparent;

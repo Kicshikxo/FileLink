@@ -2,9 +2,9 @@ package ru.kicshikxo.filelink.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -26,9 +26,13 @@ public class FileController {
   public void registerRoutes(Javalin app) {
     app.before("/api/files/list", new AuthMiddleware()::handle);
     app.before("/api/files/upload", new AuthMiddleware()::handle);
+    app.before("/api/files/delete/{fileId}", new AuthMiddleware()::handle);
+    app.before("/api/files/statistics/{fileId}", new AuthMiddleware()::handle);
 
     app.get("/api/files/list", this::list);
     app.post("/api/files/upload", this::upload);
+    app.delete("/api/files/delete/{fileId}", this::delete);
+    app.get("/api/files/statistics/{fileId}", this::statistics);
     app.get("/api/files/download/{fileId}", this::download);
   }
 
@@ -57,7 +61,55 @@ public class FileController {
     }
   }
 
-  private void download(Context ctx) throws IOException, SQLException {
+  private void delete(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+      UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
+
+      FileDto file = FileRepository.getById(fileId);
+      if (file == null) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      if (!file.getUserId().equals(userId)) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      fileService.deleteFile(fileId);
+      ctx.json(Map.of("success", true));
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
+  private void statistics(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+      UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
+      int days = ctx.queryParam("days") != null ? Integer.parseInt(ctx.queryParam("days")) : 7;
+
+      FileDto file = FileRepository.getById(fileId);
+      if (file == null) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      if (!file.getUserId().equals(userId)) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      ctx.json(Map.of(
+          "file", file,
+          "data", fileService.getFileStatistics(fileId, days)));
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
+  private void download(Context ctx) {
     NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
 
     try {
@@ -68,12 +120,19 @@ public class FileController {
         throw new NotFoundResponse("FILE NOT FOUND");
       }
 
+      if (fileDto.getDeletedAt() != null) {
+        throw new NotFoundResponse("FILE DELETED");
+      }
+      if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
+        throw new NotFoundResponse("FILE EXPIRED");
+      }
+
       File savedFile = fileService.getFile(fileId);
       ctx.contentType("application/octet-stream");
       ctx.header("Content-Disposition", "attachment; filename=\"" + fileDto.getFileName() + "\"");
       ctx.result(new FileInputStream(savedFile));
 
-      FileDownloadsRepository.createForFileId(fileId);
+      FileDownloadsRepository.createForFileById(fileId);
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }

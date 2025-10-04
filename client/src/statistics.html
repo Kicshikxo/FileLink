@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="/fonts/Rubik-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileLink statistics</title>
+  </head>
+  <body>
+    <div class="app-layout">
+      <header data-component="header"></header>
+
+      <main class="app-main">
+        <section class="app-page app-page--centered">
+          <div
+            data-component="file-statistics"
+            id="statistics-file-statistics"
+            class="app-container"
+          ></div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="assets/js/main.js"></script>
+    <script type="module" src="assets/js/pages/statistics.js"></script>
+    <script type="module" src="assets/js/middleware/auth.js"></script>
+  </body>
+</html>

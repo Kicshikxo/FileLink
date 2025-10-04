@@ -5,11 +5,11 @@ import { filesState } from '~/assets/js/state/files'
 import '~/assets/css/components/upload-area.css'
 
 export function UploadArea(originalElement) {
-  const uploadAreaContainer = document.createElement('div')
-  uploadAreaContainer.id = originalElement.id ?? ''
-  uploadAreaContainer.className = originalElement.className ?? ''
-  uploadAreaContainer.classList.add('upload-area-container')
-  uploadAreaContainer.innerHTML = /*html*/ `
+  const container = document.createElement('div')
+  container.id = originalElement.id ?? ''
+  container.className = originalElement.className ?? ''
+  container.classList.add('upload-area-container')
+  container.innerHTML = /*html*/ `
     <div class="upload-area" >
       <input type="file" hidden multiple data-role="input" />
       <span class="upload-icon">${UploadIcon}</span>
@@ -19,22 +19,22 @@ export function UploadArea(originalElement) {
     </div>
   `
 
-  const uploadArea = uploadAreaContainer.querySelector('.upload-area')
+  const uploadArea = container.querySelector('.upload-area')
   const uploadAreaInput = uploadArea.querySelector('[data-role="input"]')
 
-  uploadAreaContainer.addEventListener('click', () => {
+  container.addEventListener('click', () => {
     if (filesState.uploading) return
     uploadAreaInput.click()
   })
 
-  uploadAreaContainer.addEventListener('dragover', (event) => {
+  container.addEventListener('dragover', (event) => {
     event.preventDefault()
     uploadArea.classList.add('upload-area--dragover')
   })
-  uploadAreaContainer.addEventListener('dragleave', () =>
+  container.addEventListener('dragleave', () =>
     uploadArea.classList.remove('upload-area--dragover'),
   )
-  uploadAreaContainer.addEventListener('drop', (event) => {
+  container.addEventListener('drop', (event) => {
     event.preventDefault()
     uploadArea.classList.remove('upload-area--dragover')
     if (filesState.uploading) return
@@ -52,10 +52,10 @@ export function UploadArea(originalElement) {
 
     try {
       const uploadedFiles = await uploadFiles(files, (percent) => (filesState.progress = percent))
-      filesState.files = filesState.files.concat(uploadedFiles)
-    } catch (event) {
-      console.error(event)
-      alert(`Ошибка при загрузке: ${event.response.data.title}`)
+      filesState.files = (filesState.files ?? []).concat(uploadedFiles)
+    } catch (error) {
+      console.error(error)
+      alert(`Ошибка при загрузке: ${error.response.data.title}`)
     } finally {
       filesState.uploading = false
       uploadAreaInput.value = ''
@@ -69,5 +69,5 @@ export function UploadArea(originalElement) {
     }
   })
 
-  return uploadAreaContainer
+  return container
 }

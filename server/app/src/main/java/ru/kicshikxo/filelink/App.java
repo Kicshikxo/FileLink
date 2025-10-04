@@ -5,6 +5,7 @@ import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.controller.AuthController;
 import ru.kicshikxo.filelink.controller.FileController;
 import ru.kicshikxo.filelink.database.migration.DatabaseMigration;
+import ru.kicshikxo.filelink.tasks.FileCleanupTask;
 
 public class App {
   public static void main(String[] args) {
@@ -14,5 +15,7 @@ public class App {
 
     new AuthController().registerRoutes(app);
     new FileController().registerRoutes(app);
+
+    FileCleanupTask.start();
   }
 }

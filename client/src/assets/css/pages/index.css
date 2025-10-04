@@ -10,6 +10,6 @@
 
 #index-uploaded-files {
   display: none;
-  width: clamp(300px, 50%, 600px);
+  width: clamp(300px, 50%, 800px);
   margin-top: 32px;
 }

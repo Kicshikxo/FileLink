@@ -4,7 +4,8 @@ export const filesState = createState(
   {
     uploading: false,
     progress: 0,
-    files: [],
+    files: undefined,
+    statistics: undefined,
   },
   (key, value) => {
     document.dispatchEvent(new CustomEvent('filesStateChange', { detail: { key, value } }))

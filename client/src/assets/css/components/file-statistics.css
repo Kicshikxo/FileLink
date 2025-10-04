@@ -1,0 +1,45 @@
+.file-statistics-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+.file-statistics__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+}
+.file-statistics__info {
+  display: none;
+  width: 100%;
+  padding: 0 32px;
+  flex-direction: column;
+  gap: 8px;
+}
+.file-statistics__info-item {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+}
+.file-statistics__loader {
+  width: 96px;
+  height: 96px;
+  color: var(--color-gray-500);
+  pointer-events: none;
+}
+.file-statistics__empty {
+  display: none;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+}
+.file-statistics__chart-title {
+  display: none;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--color-gray-600);
+}
+.file-statistics__chart {
+  display: none;
+}

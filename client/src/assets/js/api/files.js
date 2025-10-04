@@ -6,6 +6,20 @@ export async function getUploadedFiles() {
   return response.data
 }
 
+export async function getFileStatistics(fileId, days = 7) {
+  const response = await axios.get(`/api/files/statistics/${fileId}`, {
+    params: { days },
+  })
+
+  return response.data
+}
+
+export async function deleteFile(fileId) {
+  const response = await axios.delete(`/api/files/delete/${fileId}`)
+
+  return response.status === 200
+}
+
 export async function uploadFiles(files, onProgress) {
   if (!files.length) return
 
