@@ -11,7 +11,7 @@ public class AuthMiddleware {
 
   public void handle(Context ctx) {
     String headerToken = ctx.header("Authorization");
-    String cookieToken = ctx.cookie("filelink-token");
+    String cookieToken = ctx.cookie(AuthService.AUTH_COOKIE_NAME);
 
     String token = headerToken != null ? headerToken.substring("Bearer ".length()) : cookieToken;
 

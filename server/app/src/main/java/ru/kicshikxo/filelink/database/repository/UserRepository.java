@@ -7,14 +7,17 @@ import ru.kicshikxo.filelink.database.Database;
 import ru.kicshikxo.filelink.dto.file.UserDto;
 
 public class UserRepository {
-  public static UserDto getById(UUID userId) throws SQLException {
+  public static UserDto create(String email, String password_hash) throws SQLException {
     return Database.queryFirst(
-        "SELECT * FROM users WHERE user_id = ?",
-        preparedStatement -> preparedStatement.setObject(1, userId),
+        "INSERT INTO users (email, password_hash) VALUES (?, ?) RETURNING *",
+        preparedStatement -> {
+          preparedStatement.setString(1, email);
+          preparedStatement.setString(2, password_hash);
+        },
         resultSet -> new UserDto(
             (UUID) resultSet.getObject("user_id"),
             resultSet.getString("email"),
-            resultSet.getString("password"),
+            resultSet.getString("password_hash"),
             resultSet.getTimestamp("created_at"),
             resultSet.getTimestamp("updated_at")));
   }
@@ -26,7 +29,7 @@ public class UserRepository {
         resultSet -> new UserDto(
             (UUID) resultSet.getObject("user_id"),
             resultSet.getString("email"),
-            resultSet.getString("password"),
+            resultSet.getString("password_hash"),
             resultSet.getTimestamp("created_at"),
             resultSet.getTimestamp("updated_at")));
   }

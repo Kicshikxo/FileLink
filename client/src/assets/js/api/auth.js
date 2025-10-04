@@ -12,6 +12,12 @@ export async function login(email, password) {
   return !!response.data.token
 }
 
+export async function register(email, password) {
+  const response = await axios.post('/api/auth/register', { email, password })
+
+  return !!response.data.token
+}
+
 export async function logout() {
   const response = await axios.get('/api/auth/logout')
 

@@ -1,21 +1,21 @@
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
   gap: 16px;
   width: 300px;
 }
-.login-form__title {
+.register-form__title {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--color-gray-600);
   text-wrap: balance;
   text-align: center;
 }
-.login-form__input {
+.register-form__input {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-.login-form__input label {
+.register-form__input label {
   color: var(--color-gray-500);
 }

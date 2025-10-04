@@ -14,7 +14,7 @@ public class DatabaseMigration {
           "CREATE TABLE IF NOT EXISTS users (" +
               "user_id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY," +
               "email TEXT UNIQUE NOT NULL," +
-              "\"password\" CHAR(60) NOT NULL," +
+              "password_hash CHAR(60) NOT NULL," +
               "created_at TIMESTAMP DEFAULT NOW()," +
               "updated_at TIMESTAMP DEFAULT NOW()" +
               ")",

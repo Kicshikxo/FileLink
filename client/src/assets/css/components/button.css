@@ -17,6 +17,11 @@
   border: 1px solid var(--button-border);
 }
 
+.app-button:disabled {
+  cursor: progress;
+  opacity: 0.75;
+}
+
 .app-button--text {
   color: var(--button-color);
   background-color: transparent;

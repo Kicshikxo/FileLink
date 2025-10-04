@@ -1,10 +1,14 @@
-import '~/assets/css/pages/login.css'
 import { login } from '~/assets/js/api/auth'
 
+import '~/assets/css/pages/login.css'
+
 const loginForm = document.querySelector('#login-form')
+const loginSubmitButton = document.querySelector('#login-submit-button')
 
 loginForm.addEventListener('submit', async (event) => {
   event.preventDefault()
+
+  loginSubmitButton.disabled = true
 
   const formData = new FormData(loginForm)
   try {
@@ -15,5 +19,7 @@ loginForm.addEventListener('submit', async (event) => {
   } catch (error) {
     console.error(error)
     alert(`Ошибка при входе в систему: ${error.response.data.title}`)
+  } finally {
+    loginSubmitButton.disabled = false
   }
 })

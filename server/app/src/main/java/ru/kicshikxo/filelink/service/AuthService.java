@@ -19,6 +19,7 @@ import ru.kicshikxo.filelink.dto.file.UserDto;
 public class AuthService {
   private static final Dotenv dotenv = Dotenv.load();
 
+  public static final String AUTH_COOKIE_NAME = dotenv.get("AUTH_COOKIE_NAME", "filelink-token");
   private static final String JWT_SECRET_KEY = dotenv.get("JWT_SECRET_KEY");
   private static final SecretKey KEY = Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
@@ -30,9 +31,20 @@ public class AuthService {
       throw new RuntimeException("INVALID CREDENTIALS");
     }
 
-    if (!BCrypt.checkpw(password, user.getPassword())) {
+    if (!BCrypt.checkpw(password, user.getPassword_hash())) {
       throw new RuntimeException("INVALID CREDENTIALS");
     }
+
+    return generateToken(user.getUserId());
+  }
+
+  public String register(String email, String password) throws SQLException, RuntimeException {
+    UserDto existingUser = UserRepository.getByEmail(email);
+    if (existingUser != null) {
+      throw new RuntimeException("USER ALREADY EXISTS");
+    }
+
+    UserDto user = UserRepository.create(email, BCrypt.hashpw(password, BCrypt.gensalt()));
 
     return generateToken(user.getUserId());
   }

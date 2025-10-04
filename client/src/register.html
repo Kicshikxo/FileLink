@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/Rubik-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FileLink login</title>
+    <title>FileLink register</title>
   </head>
   <body>
     <div class="app-layout">
@@ -14,9 +14,9 @@
       <main class="app-main">
         <section class="app-page app-page--centered">
           <div class="app-container">
-            <form id="login-form" class="login-form">
-              <div class="login-form__title">Войдите в аккаунт чтобы продолжить</div>
-              <div class="login-form__input">
+            <form id="register-form" class="register-form">
+              <div class="register-form__title">Создайте аккаунт</div>
+              <div class="register-form__input">
                 <label for="email">Email</label>
                 <input
                   class="app-input"
@@ -27,22 +27,37 @@
                   required
                 />
               </div>
-              <div class="login-form__input">
+              <div class="register-form__input">
                 <label for="password">Пароль</label>
                 <input
                   class="app-input"
                   type="password"
                   placeholder="Пароль"
                   name="password"
-                  autocomplete="current-password"
+                  autocomplete="new-password"
                   required
                 />
               </div>
-              <a href="/register" style="margin-left: auto">
-                <button class="app-button app-button--text" type="button">Создать аккаунт</button>
+              <div class="register-form__input">
+                <label for="password">Повторите пароль</label>
+                <input
+                  class="app-input"
+                  type="password"
+                  placeholder="Повторите пароль"
+                  name="password-confirmation"
+                  autocomplete="new-password"
+                  required
+                />
+              </div>
+              <a href="/login" style="margin-left: auto">
+                <button class="app-button app-button--text" type="button">Уже есть аккаунт</button>
               </a>
-              <button id="login-submit-button" class="app-button app-button--primary" type="submit">
-                Войти
+              <button
+                id="register-submit-button"
+                class="app-button app-button--success"
+                type="submit"
+              >
+                Регистрация
               </button>
             </form>
           </div>
@@ -51,6 +66,6 @@
     </div>
 
     <script type="module" src="assets/js/main.js"></script>
-    <script type="module" src="assets/js/pages/login.js"></script>
+    <script type="module" src="assets/js/pages/register.js"></script>
   </body>
 </html>

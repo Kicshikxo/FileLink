@@ -21,6 +21,7 @@ public class AuthController {
   public void registerRoutes(Javalin app) {
     app.get("/api/auth/check", this::checkAuth);
     app.post("/api/auth/login", this::handleLogin);
+    app.post("/api/auth/register", this::handleRegister);
     app.get("/api/auth/logout", this::handleLogout);
 
     app.exception(JsonProcessingException.class, (error, ctx) -> {
@@ -39,7 +40,7 @@ public class AuthController {
       LoginRequestDto loginRequest = ctx.bodyAsClass(LoginRequestDto.class);
       String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-      ctx.cookie("filelink-token", token, AuthService.EXPIRATION_SECONDS);
+      ctx.cookie(AuthService.AUTH_COOKIE_NAME, token, AuthService.EXPIRATION_SECONDS);
       ctx.json(Map.of("token", token));
     } catch (RuntimeException error) {
       throw new UnauthorizedResponse(error.toString());
@@ -48,10 +49,26 @@ public class AuthController {
     }
   }
 
+  private void handleRegister(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 2, TimeUnit.MINUTES);
+
+    try {
+      LoginRequestDto registerRequest = ctx.bodyAsClass(LoginRequestDto.class);
+      String token = authService.register(registerRequest.getEmail(), registerRequest.getPassword());
+
+      ctx.cookie(AuthService.AUTH_COOKIE_NAME, token, AuthService.EXPIRATION_SECONDS);
+      ctx.json(Map.of("token", token));
+    } catch (RuntimeException error) {
+      throw new BadRequestResponse(error.toString());
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
   private void handleLogout(Context ctx) {
     NaiveRateLimit.requestPerTimeUnit(ctx, 2, TimeUnit.MINUTES);
 
-    ctx.removeCookie("filelink-token");
+    ctx.removeCookie(AuthService.AUTH_COOKIE_NAME);
     ctx.json(Map.of("success", true));
   }
 }
