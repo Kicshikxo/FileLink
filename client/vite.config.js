@@ -11,17 +11,25 @@ export default defineConfig({
   },
 
   server: {
-    port: 3000,
+    port: process.env.PORT || 3000,
+    allowedHosts: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:7070',
+        target: process.env.API_URL || 'http://localhost:7070',
         changeOrigin: true,
       },
     },
   },
 
   preview: {
+    port: process.env.PORT || 3000,
     allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: process.env.API_URL || 'http://localhost:7070',
+        changeOrigin: true,
+      },
+    },
   },
 
   build: {
