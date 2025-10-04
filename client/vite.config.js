@@ -20,6 +20,10 @@ export default defineConfig({
     },
   },
 
+  preview: {
+    allowedHosts: true,
+  },
+
   build: {
     outDir: '../dist',
     emptyOutDir: true,
@@ -28,7 +32,9 @@ export default defineConfig({
       input: {
         index: resolve(__dirname, 'src/index.html'),
         login: resolve(__dirname, 'src/login.html'),
+        register: resolve(__dirname, 'src/register.html'),
         dashboard: resolve(__dirname, 'src/dashboard.html'),
+        statistics: resolve(__dirname, 'src/statistics.html'),
       },
     },
   },
