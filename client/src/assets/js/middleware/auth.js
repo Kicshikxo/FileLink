@@ -2,7 +2,9 @@ import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { checkAuth } from '~/assets/js/api/auth'
 import { authState } from '~/assets/js/state/auth'
 
-async function showPageLoader() {
+const authPages = ['/login', '/register']
+
+function showPageLoader() {
   const appMain = document.querySelector('.app-main')
   if (appMain) {
     const appPageLoader = document.createElement('div')
@@ -15,50 +17,50 @@ async function showPageLoader() {
   }
 }
 
-async function hidePageLoader() {
+function hidePageLoader() {
   const appMain = document.querySelector('.app-main')
   if (appMain) {
     const appPageLoader = appMain.querySelector('.app-page-loader')
-    if (appPageLoader && authState.isAuth) {
+    if (appPageLoader) {
       appPageLoader.remove()
     }
   }
 }
 
-document.addEventListener('authStateChange', async (event) => {
-  const { key, value } = event.detail
-  if (key === 'isAuth') {
-    if (value && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-      hidePageLoader()
-    }
-  }
-})
-
 async function authMiddleware() {
+  const pathname = window.location.pathname
+
   try {
     const success = await checkAuth()
 
     if (success) {
-      if (window.location.pathname === '/login' || window.location.pathname === '/register') {
+      if (authPages.includes(pathname)) {
         window.location.href = '/'
       }
     }
 
     authState.isAuth = true
   } catch (error) {
-    if (
-      error.response.status === 401 &&
-      window.location.pathname !== '/login' &&
-      window.location.pathname !== '/register'
-    ) {
-      window.location.href = '/login'
+    console.error(error)
 
+    if (error?.response?.status === 401) {
       authState.isAuth = false
     }
-    if (error.response.status === 500) {
+    else if (error?.response?.status === 500) {
       alert('Ошибка сервера')
+    } else {
+      alert('Ошибка авторизации')
     }
+  }
+
+  if (authState.isAuth && !authPages.includes(pathname)) {
+    hidePageLoader()
+  } else if (!authState.isAuth && authPages.includes(pathname)) {
+    hidePageLoader()
+  } else if (!authState.isAuth) {
+    window.location.href = '/login'
   }
 }
 
-showPageLoader().then(authMiddleware)
+showPageLoader()
+authMiddleware()
