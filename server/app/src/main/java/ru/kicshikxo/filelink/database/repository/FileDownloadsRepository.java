@@ -42,7 +42,7 @@ public class FileDownloadsRepository {
       preparedStatement.setInt(1, days);
       preparedStatement.setObject(2, fileId);
     }, resultSet -> new DailyDownloadStatsDto(
-        resultSet.getDate("download_date"),
+        resultSet.getDate("download_date").toString(),
         resultSet.getInt("downloads_count")));
   }
 }

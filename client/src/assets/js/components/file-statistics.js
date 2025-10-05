@@ -2,7 +2,7 @@ import Chart from 'chart.js/auto'
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 
 import '~/assets/css/components/file-statistics.css'
-import { formatDate, formatFileSize } from '~/assets/js/utils'
+import { formatDate, formatDateTime, formatFileSize } from '~/assets/js/utils'
 
 export function FileStatistics(originalElement) {
   const component = document.createElement('div')
@@ -39,7 +39,7 @@ export function FileStatistics(originalElement) {
   let chartInstance = null
 
   const renderChart = (statistics) => {
-    const labels = statistics.map((item) => new Date(item.date).toISOString().split('T')[0])
+    const labels = statistics.map((item) => formatDate(item.date))
     const data = statistics.map((item) => item.downloads)
 
     if (chartInstance) {
@@ -91,7 +91,7 @@ export function FileStatistics(originalElement) {
 
         fileName.textContent = value.file.fileName
         fileSize.textContent = formatFileSize(value.file.fileSize)
-        fileDate.textContent = formatDate(value.file.createdAt)
+        fileDate.textContent = formatDateTime(value.file.createdAt)
       } else {
         fileInfo.style.display = 'none'
       }

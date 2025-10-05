@@ -1,15 +1,15 @@
 #index-upload-area {
-  width: clamp(300px, 50%, 800px);
+  width: clamp(300px, 75%, 800px);
 }
 
 #index-progress-bar {
   display: none;
-  width: clamp(300px, 50%, 600px);
+  width: clamp(300px, 75%, 600px);
   margin-top: 32px;
 }
 
 #index-uploaded-files {
   display: none;
-  width: clamp(300px, 50%, 800px);
+  width: clamp(300px, 75%, 800px);
   margin-top: 32px;
 }

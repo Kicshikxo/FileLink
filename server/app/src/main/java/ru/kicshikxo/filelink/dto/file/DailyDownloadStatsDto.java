@@ -1,17 +1,15 @@
 package ru.kicshikxo.filelink.dto.file;
 
-import java.util.Date;
-
 public class DailyDownloadStatsDto {
-  private Date date;
+  private String date;
   private int downloads;
 
-  public DailyDownloadStatsDto(Date date, int downloads) {
+  public DailyDownloadStatsDto(String date, int downloads) {
     this.date = date;
     this.downloads = downloads;
   }
 
-  public Date getDate() {
+  public String getDate() {
     return date;
   }
 

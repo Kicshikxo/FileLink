@@ -2,6 +2,7 @@ package ru.kicshikxo.filelink.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -128,8 +129,14 @@ public class FileController {
       }
 
       File savedFile = fileService.getFile(fileId);
-      ctx.contentType("application/octet-stream");
-      ctx.header("Content-Disposition", "attachment; filename=\"" + fileDto.getFileName() + "\"");
+
+      String contentType = Files.probeContentType(savedFile.toPath());
+      if (contentType == null) {
+        contentType = "application/octet-stream";
+      }
+      ctx.contentType(contentType);
+      ctx.header("Content-Disposition", "inline; filename=\"" + fileDto.getFileName() + "\"");
+
       ctx.result(new FileInputStream(savedFile));
 
       FileDownloadsRepository.createForFileById(fileId);
