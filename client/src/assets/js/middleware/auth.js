@@ -1,4 +1,5 @@
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
+import { checkAuth } from '~/assets/js/api/auth'
 import { authState } from '~/assets/js/state/auth'
 
 async function showPageLoader() {
@@ -27,10 +28,37 @@ async function hidePageLoader() {
 document.addEventListener('authStateChange', async (event) => {
   const { key, value } = event.detail
   if (key === 'isAuth') {
-    if (value) {
+    if (value && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
       hidePageLoader()
     }
   }
 })
 
-showPageLoader()
+async function authMiddleware() {
+  try {
+    const success = await checkAuth()
+
+    if (success) {
+      if (window.location.pathname === '/login' || window.location.pathname === '/register') {
+        window.location.href = '/'
+      }
+    }
+
+    authState.isAuth = true
+  } catch (error) {
+    if (
+      error.response.status === 401 &&
+      window.location.pathname !== '/login' &&
+      window.location.pathname !== '/register'
+    ) {
+      window.location.href = '/login'
+
+      authState.isAuth = false
+    }
+    if (error.response.status === 500) {
+      alert('Ошибка сервера')
+    }
+  }
+}
+
+showPageLoader().then(authMiddleware)
