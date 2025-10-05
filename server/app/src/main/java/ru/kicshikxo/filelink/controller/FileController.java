@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.cxf.attachment.Rfc5987Util;
+
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.InternalServerErrorResponse;
@@ -137,7 +139,10 @@ public class FileController {
         contentType = "application/octet-stream";
       }
       ctx.contentType(contentType);
-      ctx.header("Content-Disposition", "inline; filename=\"" + fileDto.getFileName() + "\"");
+
+      String fileName = fileDto.getFileName().replace("\"", "\\\"");
+      ctx.header("Content-Disposition", "inline; filename=\"" + fileName + "\"; filename*=UTF-8''"
+          + Rfc5987Util.encode(fileName, "UTF-8"));
 
       ctx.result(new FileInputStream(savedFile));
 
