@@ -48,16 +48,14 @@ async function authMiddleware() {
     }
     else if (error?.response?.status === 500) {
       alert('Ошибка сервера')
-    } else {
-      alert('Ошибка авторизации')
     }
   }
 
   if (authState.isAuth && !authPages.includes(pathname)) {
     hidePageLoader()
-  } else if (!authState.isAuth && authPages.includes(pathname)) {
+  } else if (authState.isAuth === false && authPages.includes(pathname)) {
     hidePageLoader()
-  } else if (!authState.isAuth) {
+  } else if (authState.isAuth === false) {
     window.location.href = '/login'
   }
 }

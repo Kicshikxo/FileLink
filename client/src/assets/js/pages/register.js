@@ -2,6 +2,7 @@ import { register } from '~/assets/js/api/auth'
 
 import '~/assets/css/pages/register.css'
 
+const registerFormContainer = document.querySelector('#register-form-container')
 const registerForm = document.querySelector('#register-form')
 const registerSubmitButton = document.querySelector('#register-submit-button')
 
@@ -28,4 +29,8 @@ registerForm.addEventListener('submit', async (event) => {
   } finally {
     registerSubmitButton.disabled = false
   }
+})
+
+window.addEventListener('load', () => {
+  registerFormContainer.style.display = 'block'
 })

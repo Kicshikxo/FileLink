@@ -2,6 +2,7 @@ import { login } from '~/assets/js/api/auth'
 
 import '~/assets/css/pages/login.css'
 
+const loginFormContainer = document.querySelector('#login-form-container')
 const loginForm = document.querySelector('#login-form')
 const loginSubmitButton = document.querySelector('#login-submit-button')
 
@@ -22,4 +23,8 @@ loginForm.addEventListener('submit', async (event) => {
   } finally {
     loginSubmitButton.disabled = false
   }
+})
+
+window.addEventListener('load', () => {
+  loginFormContainer.style.display = 'block'
 })
