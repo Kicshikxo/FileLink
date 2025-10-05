@@ -1,8 +1,10 @@
 import Chart from 'chart.js/auto'
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
+import { deleteFile } from '~/assets/js/api/files'
+import { filesState } from '~/assets/js/state/files'
+import { formatDate, formatDateTime, formatFileSize } from '~/assets/js/utils'
 
 import '~/assets/css/components/file-statistics.css'
-import { formatDate, formatDateTime, formatFileSize } from '~/assets/js/utils'
 
 export function FileStatistics(originalElement) {
   const component = document.createElement('div')
@@ -11,13 +13,22 @@ export function FileStatistics(originalElement) {
   component.classList.add('file-statistics-container')
   component.innerHTML = /*html*/ `
     <span class="file-statistics__title">Статистика файла</span>
-    <span class="file-statistics__info">
-      <span class="file-statistics__info-item">Название: <span class="file-statistics__info-item--name"></span></span>
-      <span class="file-statistics__info-item">Размер: <span class="file-statistics__info-item--size"></span></span>
-      <span class="file-statistics__info-item">Дата загрузки: <span class="file-statistics__info-item--date"></span></span>
-    </span>
+    <div class="file-statistics__info">
+      <div class="file-statistics__file-info">
+        <span class="file-statistics__file-info-item">Название: <span class="file-statistics__info-item--name"></span></span>
+        <span class="file-statistics__file-info-item">Размер: <span class="file-statistics__info-item--size"></span></span>
+        <span class="file-statistics__file-info-item">Дата загрузки: <span class="file-statistics__info-item--date"></span></span>
+      </div>
+      <div class="file-statistics__actions">
+        <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
+        <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
+        <a download class="download-file-link">
+          <button class="app-button app-button--success app-button--small" style="width: 100%">Скачать</button>
+        </a>
+      </div>
+    </div>
     <span class="file-statistics__loader">${LoadingIcon}</span>
-    <span class="file-statistics__empty">Файл не найден или нет статистики</span>
+    <span class="file-statistics__empty">Файл не найден или статистика недоступна</span>
     <span class="file-statistics__chart-title">Количество загрузок</span>
     <div style="width: 100%; height: 400px;">
       <canvas class="file-statistics__chart"></canvas>
@@ -30,6 +41,10 @@ export function FileStatistics(originalElement) {
   const fileSize = component.querySelector('.file-statistics__info-item--size')
   const fileDate = component.querySelector('.file-statistics__info-item--date')
 
+  const deleteFileButton = component.querySelector('.delete-file-button')
+  const copyFileLinkButton = component.querySelector('.copy-file-link-button')
+  const downloadFileLink = component.querySelector('.download-file-link')
+
   const containerLoader = component.querySelector('.file-statistics__loader')
   const containerEmpty = component.querySelector('.file-statistics__empty')
 
@@ -37,6 +52,37 @@ export function FileStatistics(originalElement) {
   const chart = component.querySelector('.file-statistics__chart')
 
   let chartInstance = null
+
+  copyFileLinkButton.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`,
+      )
+      alert(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
+    } catch (error) {
+      console.error(error)
+    }
+  })
+
+
+  deleteFileButton.addEventListener('click', async () => {
+    deleteFileButton.disabled = true
+    try {
+      const success = await deleteFile(filesState.statistics.file.fileId)
+      if (success) {
+        if (window.history.length > 1 && document.referrer) {
+          window.history.back();
+        } else {
+          window.location.href = '/';
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      alert(`Ошибка при удалении файла: ${error.response.data.title}`)
+    } finally {
+      deleteFileButton.disabled = false
+    }
+  })
 
   const renderChart = (statistics) => {
     const labels = statistics.map((item) => formatDate(item.date))
@@ -85,6 +131,7 @@ export function FileStatistics(originalElement) {
       containerEmpty.style.display = value?.data?.length ? 'none' : 'block'
       chartTitle.style.display = value?.data?.length ? 'block' : 'none'
       chart.style.display = value?.data?.length ? 'block' : 'none'
+      downloadFileLink.href = `/api/files/download/${filesState.statistics?.file?.fileId}`
 
       if (value?.file?.fileName && value?.file?.fileSize && value?.file?.createdAt) {
         fileInfo.style.display = 'flex'

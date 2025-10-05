@@ -12,16 +12,39 @@
 }
 .file-statistics__info {
   display: none;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: start;
   width: 100%;
+  gap: 8px;
   padding: 0 32px;
+}
+@media (min-width: 768px) {
+  .file-statistics__info {
+    flex-direction: row;
+  }
+}
+.file-statistics__file-info {
+  display: flex;
+  width: 100%;
   flex-direction: column;
   word-break: break-all;
   gap: 8px;
 }
-.file-statistics__info-item {
+.file-statistics__file-info-item {
   font-size: 1rem;
   font-weight: bold;
   color: var(--color-gray-600);
+}
+.file-statistics__actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+@media (min-width: 768px) {
+  .file-statistics__actions {
+    flex-direction: column;
+  }
 }
 .file-statistics__loader {
   width: 96px;

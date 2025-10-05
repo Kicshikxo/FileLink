@@ -29,6 +29,7 @@ public class FileController {
     app.before("/api/files/upload", new AuthMiddleware()::handle);
     app.before("/api/files/delete/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/statistics/{fileId}", new AuthMiddleware()::handle);
+    app.before("/api/files/download/{fileId}", new AuthMiddleware(false)::handle);
 
     app.get("/api/files/list", this::list);
     app.post("/api/files/upload", this::upload);
@@ -114,6 +115,7 @@ public class FileController {
     NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
 
     try {
+      UUID userId = ctx.attribute("userId");
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
 
       FileDto fileDto = FileRepository.getById(fileId);
@@ -139,7 +141,9 @@ public class FileController {
 
       ctx.result(new FileInputStream(savedFile));
 
-      FileDownloadsRepository.createForFileById(fileId);
+      if (userId == null || !userId.equals(fileDto.getUserId())) {
+        FileDownloadsRepository.createForFileById(fileId);
+      }
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }

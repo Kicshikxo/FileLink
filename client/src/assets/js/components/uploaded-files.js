@@ -33,12 +33,12 @@ export function UploadedFiles(originalElement) {
         fileItem.classList.add('uploaded-files__list-item')
         fileItem.innerHTML = /*html*/ `
           <span class="uploaded-files__list-item__name">${file.fileName} <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span></span>
-          <div class="uploaded-files__list-item__buttons">
+          <div class="uploaded-files__list-item__actions">
             <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
             <a href="/statistics?fileId=${file.fileId}">
               <button class="app-button app-button--small">Статистика</button>
             </a>
-            <button class="app-button app-button--primary app-button--small copy-file-link-button">Копировать</button>
+            <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
             <a href="/api/files/download/${file.fileId}" download>
               <button class="app-button app-button--success app-button--small">Скачать</button>
             </a>
@@ -46,6 +46,8 @@ export function UploadedFiles(originalElement) {
         `
 
         const deleteFileButton = fileItem.querySelector('.delete-file-button')
+        const copyFileLinkButton = fileItem.querySelector('.copy-file-link-button')
+
         deleteFileButton.addEventListener('click', async () => {
           deleteFileButton.disabled = true
           try {
@@ -63,7 +65,6 @@ export function UploadedFiles(originalElement) {
           }
         })
 
-        const copyFileLinkButton = fileItem.querySelector('.copy-file-link-button')
         copyFileLinkButton.addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(

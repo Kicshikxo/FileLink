@@ -10,20 +10,30 @@ import ru.kicshikxo.filelink.service.AuthService;
 public class AuthMiddleware {
   private final AuthService authService = new AuthService();
 
+  private final boolean throwException;
+
+  public AuthMiddleware() {
+    this(true);
+  }
+
+  public AuthMiddleware(boolean throwException) {
+    this.throwException = throwException;
+  }
+
   public void handle(Context ctx) {
     String headerToken = ctx.header("Authorization");
     String cookieToken = ctx.cookie(AuthService.AUTH_COOKIE_NAME);
 
     String token = headerToken != null ? headerToken.substring("Bearer ".length()) : cookieToken;
 
-    if (token == null) {
+    if (token == null && throwException) {
       throw new UnauthorizedResponse("NOT AUTHORIZED");
     }
 
     try {
       UUID userId = authService.verifyToken(token);
 
-      if (UserRepository.getById(userId) == null) {
+      if (UserRepository.getById(userId) == null && throwException) {
         throw new UnauthorizedResponse("USER NOT FOUND");
       }
 
