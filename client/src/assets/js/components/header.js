@@ -27,6 +27,7 @@ export function Header(originalElement) {
       if (value && logoutButton) {
         logoutButton.style.display = 'block'
         logoutButton.addEventListener('click', async () => {
+          logoutButton.disabled = true
           try {
             const success = await logout()
             if (success) {
@@ -35,6 +36,8 @@ export function Header(originalElement) {
           } catch (error) {
             console.error(error)
             alert(`Ошибка при выходе из системы: ${error.response.data.title}`)
+          } finally {
+            logoutButton.disabled = false
           }
         })
       }
