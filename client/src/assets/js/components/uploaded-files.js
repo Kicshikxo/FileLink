@@ -32,7 +32,9 @@ export function UploadedFiles(originalElement) {
         const fileItem = document.createElement('div')
         fileItem.classList.add('uploaded-files__list-item')
         fileItem.innerHTML = /*html*/ `
-          <span class="uploaded-files__list-item__name">${file.fileName} <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span></span>
+          <span class="uploaded-files__list-item__name">
+            ${file.fileName} <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span>
+          </span>
           <div class="uploaded-files__list-item__actions">
             <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
             <a href="/statistics?fileId=${file.fileId}">

@@ -3,6 +3,7 @@ package ru.kicshikxo.filelink.service;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class FileService {
 
   private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
 
-  public File getFile(UUID fileId) throws SQLException {
+  public File getFileById(UUID fileId) throws SQLException {
     FileDto fileDto = FileRepository.getById(fileId);
     if (fileDto == null) {
       throw new NotFoundResponse("FILE NOT FOUND");
@@ -43,26 +44,56 @@ public class FileService {
     return matchingFiles[0];
   }
 
-  public List<FileDto> getFiles(UUID userId) throws SQLException {
+  public List<FileDto> getFilesByUserId(UUID userId) throws SQLException {
     return FileRepository.getByUserId(userId);
   }
 
-  public void deleteFile(UUID fileId) throws SQLException {
+  public void renameFileById(UUID fileId, String newFileName) throws SQLException {
     FileDto fileDto = FileRepository.getById(fileId);
     if (fileDto == null) {
       throw new NotFoundResponse("FILE NOT FOUND");
     }
 
-    File file = getFile(fileId);
+    if (fileDto.getDeletedAt() != null) {
+      throw new NotFoundResponse("FILE DELETED");
+    }
+    if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
+      throw new NotFoundResponse("FILE EXPIRED");
+    }
+
+    String oldExtension = getFileExtension(fileDto.getFileName());
+    String newExtension = getFileExtension(newFileName);
+
+    if (newExtension.length() == 0) {
+      newFileName = newFileName + oldExtension;
+    }
+
+    String extension = getFileExtension(newFileName);
+
+    if (!extension.equals(oldExtension)) {
+      File file = getFileById(fileId);
+      file.renameTo(new File(file.getParent(), fileDto.getFileId() + extension));
+    }
+
+    FileRepository.renameById(fileId, newFileName);
+  }
+
+  public void deleteFileById(UUID fileId) throws SQLException {
+    FileDto fileDto = FileRepository.getById(fileId);
+    if (fileDto == null) {
+      throw new NotFoundResponse("FILE NOT FOUND");
+    }
+
+    File file = getFileById(fileId);
     file.delete();
     FileRepository.deleteById(fileId);
   }
 
-  public List<DailyDownloadStatsDto> getFileStatistics(UUID fileId, int days) throws SQLException {
+  public List<DailyDownloadStatsDto> getFileStatisticsById(UUID fileId, int days) throws SQLException {
     return FileDownloadsRepository.getFileDownloadStatisticsById(fileId, days);
   }
 
-  public List<FileDto> saveFiles(UUID userId, List<UploadedFile> uploadedFiles) throws SQLException {
+  public List<FileDto> saveFilesByUserId(UUID userId, List<UploadedFile> uploadedFiles) throws SQLException {
     if (uploadedFiles.isEmpty()) {
       throw new BadRequestResponse("NO FILES UPLOADED");
     }

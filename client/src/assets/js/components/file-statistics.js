@@ -1,6 +1,6 @@
 import Chart from 'chart.js/auto'
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
-import { deleteFile } from '~/assets/js/api/files'
+import { deleteFile, renameFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
 import { formatDate, formatDateTime, formatFileSize } from '~/assets/js/utils'
 
@@ -15,9 +15,16 @@ export function FileStatistics(originalElement) {
     <span class="file-statistics__title">Статистика файла</span>
     <div class="file-statistics__info">
       <div class="file-statistics__file-info">
-        <span class="file-statistics__file-info-item">Название: <span class="file-statistics__info-item--name"></span></span>
-        <span class="file-statistics__file-info-item">Размер: <span class="file-statistics__info-item--size"></span></span>
-        <span class="file-statistics__file-info-item">Дата загрузки: <span class="file-statistics__info-item--date"></span></span>
+        <span class="file-statistics__file-info-item">
+          Название: <input class="app-input app-input--small file-statistics__info-item--name"></input>
+          <button class="app-button app-button--small rename-file-button" disabled>Переименовать</button>
+        </span>
+        <span class="file-statistics__file-info-item">
+          Размер: <span class="file-statistics__info-item--size"></span>
+        </span>
+        <span class="file-statistics__file-info-item">
+          Дата загрузки: <span class="file-statistics__info-item--date"></span>
+        </span>
       </div>
       <div class="file-statistics__actions">
         <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
@@ -41,6 +48,7 @@ export function FileStatistics(originalElement) {
   const fileSize = component.querySelector('.file-statistics__info-item--size')
   const fileDate = component.querySelector('.file-statistics__info-item--date')
 
+  const renameFileButton = component.querySelector('.rename-file-button')
   const deleteFileButton = component.querySelector('.delete-file-button')
   const copyFileLinkButton = component.querySelector('.copy-file-link-button')
   const downloadFileLink = component.querySelector('.download-file-link')
@@ -64,6 +72,29 @@ export function FileStatistics(originalElement) {
     }
   })
 
+  fileName.addEventListener('input', () => {
+    renameFileButton.disabled = fileName.value === filesState.statistics.file.fileName
+  })
+
+  renameFileButton.addEventListener('click', async () => {
+    fileName.disabled = true
+    renameFileButton.disabled = true
+    try {
+      const success = await renameFile(
+        filesState.statistics.file.fileId,
+        fileName.value,
+      )
+      if (success) {
+        filesState.statistics.file.fileName = fileName.value
+      }
+    } catch (error) {
+      console.error(error)
+      renameFileButton.disabled = false
+      alert(`Ошибка при переименований файла: ${error.response.data.title}`)
+    } finally {
+      fileName.disabled = false
+    }
+  })
 
   deleteFileButton.addEventListener('click', async () => {
     deleteFileButton.disabled = true
@@ -84,7 +115,7 @@ export function FileStatistics(originalElement) {
     }
   })
 
-  const renderChart = (statistics) => {
+  function renderChart(statistics) {
     const labels = statistics.map((item) => formatDate(item.date))
     const data = statistics.map((item) => item.downloads)
 
@@ -136,7 +167,7 @@ export function FileStatistics(originalElement) {
       if (value?.file?.fileName && value?.file?.fileSize && value?.file?.createdAt) {
         fileInfo.style.display = 'flex'
 
-        fileName.textContent = value.file.fileName
+        fileName.value = value.file.fileName
         fileSize.textContent = formatFileSize(value.file.fileSize)
         fileDate.textContent = formatDateTime(value.file.createdAt)
       } else {

@@ -1,5 +1,6 @@
 .app-input {
   font-size: 1rem;
+  font-weight: inherit;
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   border: 1px solid var(--color-gray-300);
@@ -11,4 +12,12 @@
 }
 .app-input:focus {
   border-color: var(--color-gray-500);
+}
+.app-input--small {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+}
+.app-input--large {
+  font-size: 1.25rem;
+  padding: 0.75rem 1rem;
 }

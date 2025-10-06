@@ -25,6 +25,15 @@ public class FileRepository {
                 : null));
   }
 
+  public static void renameById(UUID fileId, String fileName) throws SQLException {
+    Database.update(
+        "UPDATE files SET file_name = ?, updated_at = now() WHERE file_id = ?",
+        preparedStatement -> {
+          preparedStatement.setString(1, fileName);
+          preparedStatement.setObject(2, fileId);
+        });
+  }
+
   public static void deleteById(UUID fileId) throws SQLException {
     Database.update(
         "UPDATE files SET deleted_at = now() WHERE file_id = ?",

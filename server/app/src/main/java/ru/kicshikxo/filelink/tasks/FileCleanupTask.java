@@ -31,7 +31,7 @@ public class FileCleanupTask {
       for (FileDto file : expiredFiles) {
         FileRepository.expireById(file.getFileId());
 
-        File expiredFile = fileService.getFile(file.getFileId());
+        File expiredFile = fileService.getFileById(file.getFileId());
         expiredFile.delete();
       }
 

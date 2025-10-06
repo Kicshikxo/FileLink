@@ -20,6 +20,7 @@ import io.javalin.http.util.NaiveRateLimit;
 import ru.kicshikxo.filelink.database.repository.FileDownloadsRepository;
 import ru.kicshikxo.filelink.database.repository.FileRepository;
 import ru.kicshikxo.filelink.dto.file.FileDto;
+import ru.kicshikxo.filelink.dto.file.RenameFileRequestDto;
 import ru.kicshikxo.filelink.middleware.AuthMiddleware;
 import ru.kicshikxo.filelink.service.FileService;
 
@@ -29,12 +30,14 @@ public class FileController {
   public void registerRoutes(Javalin app) {
     app.before("/api/files/list", new AuthMiddleware()::handle);
     app.before("/api/files/upload", new AuthMiddleware()::handle);
+    app.before("/api/files/rename/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/delete/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/statistics/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/download/{fileId}", new AuthMiddleware(false)::handle);
 
     app.get("/api/files/list", this::list);
     app.post("/api/files/upload", this::upload);
+    app.patch("/api/files/rename/{fileId}", this::rename);
     app.delete("/api/files/delete/{fileId}", this::delete);
     app.get("/api/files/statistics/{fileId}", this::statistics);
     app.get("/api/files/download/{fileId}", this::download);
@@ -46,7 +49,7 @@ public class FileController {
     try {
       UUID userId = ctx.attribute("userId");
       List<UploadedFile> uploadedFiles = ctx.uploadedFiles();
-      ctx.json(fileService.saveFiles(userId, uploadedFiles));
+      ctx.json(fileService.saveFilesByUserId(userId, uploadedFiles));
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }
@@ -57,9 +60,33 @@ public class FileController {
 
     try {
       UUID userId = ctx.attribute("userId");
-      List<FileDto> files = fileService.getFiles(userId);
+      List<FileDto> files = fileService.getFilesByUserId(userId);
 
       ctx.json(files);
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
+  private void rename(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+      UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
+      String fileName = ctx.bodyAsClass(RenameFileRequestDto.class).getName();
+
+      FileDto file = FileRepository.getById(fileId);
+      if (file == null) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      if (!file.getUserId().equals(userId)) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+
+      fileService.renameFileById(fileId, fileName);
+      ctx.json(Map.of("success", true));
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }
@@ -81,7 +108,7 @@ public class FileController {
         throw new NotFoundResponse("FILE NOT FOUND");
       }
 
-      fileService.deleteFile(fileId);
+      fileService.deleteFileById(fileId);
       ctx.json(Map.of("success", true));
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
@@ -107,7 +134,7 @@ public class FileController {
 
       ctx.json(Map.of(
           "file", file,
-          "data", fileService.getFileStatistics(fileId, days)));
+          "data", fileService.getFileStatisticsById(fileId, days)));
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }
@@ -132,7 +159,7 @@ public class FileController {
         throw new NotFoundResponse("FILE EXPIRED");
       }
 
-      File savedFile = fileService.getFile(fileId);
+      File savedFile = fileService.getFileById(fileId);
 
       String contentType = Files.probeContentType(savedFile.toPath());
       if (contentType == null) {

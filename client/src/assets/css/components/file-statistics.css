@@ -32,6 +32,11 @@
   gap: 8px;
 }
 .file-statistics__file-info-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 26px;
   font-size: 1rem;
   font-weight: bold;
   color: var(--color-gray-600);
