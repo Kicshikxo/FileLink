@@ -23,6 +23,7 @@ public class FileService {
   private static final String UPLOADS_DIRECTORY = dotenv.get("UPLOADS_DIRECTORY", "uploads");
 
   private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
+  private static final long MAX_USER_FILES_SIZE = 1L * 1024 * 1024 * 1024;
 
   public File getFileById(UUID fileId) throws SQLException {
     FileDto fileDto = FileRepository.getById(fileId);
@@ -100,8 +101,15 @@ public class FileService {
 
     for (UploadedFile file : uploadedFiles) {
       if (file.size() > MAX_FILE_SIZE) {
-        throw new BadRequestResponse("File " + file.filename() + " exceeds the maximum size of 100 MB");
+        throw new BadRequestResponse("FILE " + file.filename() + " EXCEEDS THE MAXIMUM SIZE OF 100 MB");
       }
+    }
+
+    long userFilesSize = FileRepository.getUserFilesSize(userId);
+    long uploadedFilesSize = uploadedFiles.stream().mapToLong(UploadedFile::size).sum();
+
+    if (userFilesSize + uploadedFilesSize > MAX_USER_FILES_SIZE) {
+      throw new BadRequestResponse("EXCEEDED 1 GB STORAGE LIMIT");
     }
 
     File uploadsDirectory = new File(UPLOADS_DIRECTORY);

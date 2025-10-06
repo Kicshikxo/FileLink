@@ -74,6 +74,13 @@ public class FileRepository {
         });
   }
 
+  public static long getUserFilesSize(UUID userId) throws SQLException {
+    return Database.queryFirst(
+        "SELECT COALESCE(SUM(file_size), 0) FROM files WHERE user_id = ? AND deleted_at IS NULL AND expired_at IS NULL",
+        preparedStatement -> preparedStatement.setObject(1, userId),
+        resultSet -> resultSet.getLong(1));
+  }
+
   public static List<FileDto> getExpiredFiles() throws SQLException {
     String sql = "SELECT files.* " +
         "FROM files " +
