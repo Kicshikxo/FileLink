@@ -9,7 +9,7 @@ export function UploadedFiles(originalElement) {
   const component = document.createElement('div')
   component.id = originalElement.id ?? ''
   component.className = originalElement.className ?? ''
-  component.classList.add('uploaded-files-container')
+  component.classList.add('uploaded-files')
   component.innerHTML = /*html*/ `
     <span class="uploaded-files__title">Ваши загруженные файлы</span>
     <span class="uploaded-files__loader">${LoadingIcon}</span>

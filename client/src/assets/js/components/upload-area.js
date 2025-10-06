@@ -8,7 +8,7 @@ export function UploadArea(originalElement) {
   const component = document.createElement('div')
   component.id = originalElement.id ?? ''
   component.className = originalElement.className ?? ''
-  component.classList.add('upload-area-container')
+  component.classList.add('upload-area__wrapper')
   component.innerHTML = /*html*/ `
     <div class="upload-area">
       <input type="file" hidden multiple data-role="input" />

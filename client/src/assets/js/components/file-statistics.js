@@ -10,7 +10,7 @@ export function FileStatistics(originalElement) {
   const component = document.createElement('div')
   component.id = originalElement.id ?? ''
   component.className = originalElement.className ?? ''
-  component.classList.add('file-statistics-container')
+  component.classList.add('file-statistics')
   component.innerHTML = /*html*/ `
     <span class="file-statistics__title">Статистика файла</span>
     <div class="file-statistics__info">
