@@ -42,7 +42,7 @@ export default defineConfig({
         login: resolve(__dirname, 'src/login.html'),
         register: resolve(__dirname, 'src/register.html'),
         dashboard: resolve(__dirname, 'src/dashboard.html'),
-        statistics: resolve(__dirname, 'src/statistics.html'),
+        information: resolve(__dirname, 'src/information.html'),
       },
     },
   },

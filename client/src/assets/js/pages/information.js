@@ -1,7 +1,7 @@
 import { getFileStatistics } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
 
-import '~/assets/css/pages/statistics.css'
+import '~/assets/css/pages/information.css'
 
 document.addEventListener('authStateChange', async (event) => {
   const { key, value } = event.detail

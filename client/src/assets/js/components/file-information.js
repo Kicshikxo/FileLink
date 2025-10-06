@@ -4,29 +4,29 @@ import { deleteFile, renameFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
 import { formatDate, formatDateTime, formatFileSize } from '~/assets/js/utils'
 
-import '~/assets/css/components/file-statistics.css'
+import '~/assets/css/components/file-information.css'
 
-export function FileStatistics(originalElement) {
+export function FileInformation(originalElement) {
   const component = document.createElement('div')
   component.id = originalElement.id ?? ''
   component.className = originalElement.className ?? ''
-  component.classList.add('file-statistics')
+  component.classList.add('file-information')
   component.innerHTML = /*html*/ `
-    <span class="file-statistics__title">Статистика файла</span>
-    <div class="file-statistics__info">
-      <div class="file-statistics__file-info">
-        <span class="file-statistics__file-info-item">
-          Название: <input class="app-input app-input--small file-statistics__info-item--name"></input>
+    <span class="file-information__title">Информация о файле</span>
+    <div class="file-information__info">
+      <div class="file-information__file-info">
+        <span class="file-information__file-info-item">
+          Название: <input class="app-input app-input--small file-information__info-item--name"></input>
           <button class="app-button app-button--small rename-file-button" disabled>Переименовать</button>
         </span>
-        <span class="file-statistics__file-info-item">
-          Размер: <span class="file-statistics__info-item--size"></span>
+        <span class="file-information__file-info-item">
+          Размер: <span class="file-information__info-item--size"></span>
         </span>
-        <span class="file-statistics__file-info-item">
-          Дата загрузки: <span class="file-statistics__info-item--date"></span>
+        <span class="file-information__file-info-item">
+          Дата загрузки: <span class="file-information__info-item--date"></span>
         </span>
       </div>
-      <div class="file-statistics__actions">
+      <div class="file-information__actions">
         <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
         <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
         <a download class="download-file-link">
@@ -34,30 +34,30 @@ export function FileStatistics(originalElement) {
         </a>
       </div>
     </div>
-    <span class="file-statistics__loader">${LoadingIcon}</span>
-    <span class="file-statistics__empty">Файл не найден или статистика недоступна</span>
-    <span class="file-statistics__chart-title">Количество загрузок</span>
+    <span class="file-information__loader">${LoadingIcon}</span>
+    <span class="file-information__empty">Файл не найден или недоступен</span>
+    <span class="file-information__chart-title">Количество загрузок</span>
     <div style="width: 100%; height: 300px;">
-      <canvas class="file-statistics__chart"></canvas>
+      <canvas class="file-information__chart"></canvas>
     </div>
   `
 
-  const fileInfo = component.querySelector('.file-statistics__info')
+  const fileInfo = component.querySelector('.file-information__info')
 
-  const fileName = component.querySelector('.file-statistics__info-item--name')
-  const fileSize = component.querySelector('.file-statistics__info-item--size')
-  const fileDate = component.querySelector('.file-statistics__info-item--date')
+  const fileName = component.querySelector('.file-information__info-item--name')
+  const fileSize = component.querySelector('.file-information__info-item--size')
+  const fileDate = component.querySelector('.file-information__info-item--date')
 
   const renameFileButton = component.querySelector('.rename-file-button')
   const deleteFileButton = component.querySelector('.delete-file-button')
   const copyFileLinkButton = component.querySelector('.copy-file-link-button')
   const downloadFileLink = component.querySelector('.download-file-link')
 
-  const containerLoader = component.querySelector('.file-statistics__loader')
-  const containerEmpty = component.querySelector('.file-statistics__empty')
+  const containerLoader = component.querySelector('.file-information__loader')
+  const containerEmpty = component.querySelector('.file-information__empty')
 
-  const chartTitle = component.querySelector('.file-statistics__chart-title')
-  const chart = component.querySelector('.file-statistics__chart')
+  const chartTitle = component.querySelector('.file-information__chart-title')
+  const chart = component.querySelector('.file-information__chart')
 
   let chartInstance = null
 
