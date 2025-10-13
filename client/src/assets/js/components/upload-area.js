@@ -37,15 +37,27 @@ export function UploadArea(originalElement) {
   component.addEventListener('drop', (event) => {
     event.preventDefault()
     uploadArea.classList.remove('upload-area--dragover')
-    if (filesState.uploading) return
+
     handleFilesInput(event.dataTransfer.files)
   })
+  component.addEventListener('paste', (event) => {
+    const items = event.clipboardData.items;
+    const files = []
+    for (const item of items) {
+      if (item.kind === 'file') {
+        files.push(item.getAsFile())
+      }
+    }
+
+    handleFilesInput(files)
+  });
+
   uploadAreaInput.addEventListener('change', (event) => {
-    if (filesState.uploading) return
     handleFilesInput(event.target.files)
   })
 
   async function handleFilesInput(files) {
+    if (filesState.uploading) return
     if (!files.length) return
 
     const maxFileSize = 100 * 1024 * 1024 // 100 MB
