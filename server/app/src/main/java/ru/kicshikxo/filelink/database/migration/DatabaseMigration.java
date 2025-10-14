@@ -24,6 +24,7 @@ public class DatabaseMigration {
           "CREATE TABLE IF NOT EXISTS files (" +
               "file_id uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY," +
               "user_id uuid NOT NULL REFERENCES users(user_id) ON UPDATE CASCADE ON DELETE CASCADE," +
+              "file_index BIGINT GENERATED ALWAYS AS IDENTITY UNIQUE, " +
               "file_name TEXT NOT NULL," +
               "file_size BIGINT NOT NULL," +
               "created_at TIMESTAMP DEFAULT NOW()," +

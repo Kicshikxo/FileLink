@@ -34,6 +34,7 @@ public class FileController {
     app.before("/api/files/delete/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/statistics/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/download/{fileId}", new AuthMiddleware(false)::handle);
+    app.before("/id/{shortId}", new AuthMiddleware(false)::handle);
 
     app.get("/api/files/list", this::list);
     app.post("/api/files/upload", this::upload);
@@ -41,6 +42,7 @@ public class FileController {
     app.delete("/api/files/delete/{fileId}", this::delete);
     app.get("/api/files/statistics/{fileId}", this::statistics);
     app.get("/api/files/download/{fileId}", this::download);
+    app.get("/id/{shortId}", this::downloadByShortId);
   }
 
   private void upload(Context ctx) {
@@ -147,10 +149,7 @@ public class FileController {
       UUID userId = ctx.attribute("userId");
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
 
-      FileDto fileDto = FileRepository.getById(fileId);
-      if (fileDto == null) {
-        throw new NotFoundResponse("FILE NOT FOUND");
-      }
+      FileDto fileDto = fileService.getById(fileId);
 
       if (fileDto.getDeletedAt() != null) {
         throw new NotFoundResponse("FILE DELETED");
@@ -161,19 +160,7 @@ public class FileController {
 
       File savedFile = fileService.getFileById(fileId);
 
-      String contentType = Files.probeContentType(savedFile.toPath());
-      if (contentType == null) {
-        contentType = "application/octet-stream";
-      }
-      ctx.contentType(contentType);
-
-      ctx.header("Content-Length", String.valueOf(savedFile.length()));
-
-      String fileName = fileDto.getFileName().replace("\"", "\\\"");
-      ctx.header("Content-Disposition", "inline; filename=\"" + fileName + "\"; filename*=UTF-8''"
-          + Rfc5987Util.encode(fileName, "UTF-8"));
-
-      ctx.result(new FileInputStream(savedFile));
+      sendFile(ctx, fileDto, savedFile);
 
       if (userId == null || !userId.equals(fileDto.getUserId())) {
         FileDownloadsRepository.createForFileById(fileId);
@@ -181,5 +168,49 @@ public class FileController {
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }
+  }
+
+  private void downloadByShortId(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 10, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+      String shortId = ctx.pathParam("shortId");
+
+      FileDto fileDto = fileService.getByShortId(shortId);
+
+      if (fileDto.getDeletedAt() != null) {
+        throw new NotFoundResponse("FILE DELETED");
+      }
+      if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
+        throw new NotFoundResponse("FILE EXPIRED");
+      }
+
+      File savedFile = fileService.getFileById(fileDto.getFileId());
+
+      sendFile(ctx, fileDto, savedFile);
+
+      if (userId == null || !userId.equals(fileDto.getUserId())) {
+        FileDownloadsRepository.createForFileById(fileDto.getFileId());
+      }
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
+  }
+
+  private void sendFile(Context ctx, FileDto fileDto, File file) throws Exception {
+    String contentType = Files.probeContentType(file.toPath());
+    if (contentType == null) {
+      contentType = "application/octet-stream";
+    }
+    ctx.contentType(contentType);
+
+    ctx.header("Content-Length", String.valueOf(file.length()));
+
+    String fileName = fileDto.getFileName().replace("\"", "\\\"");
+    ctx.header("Content-Disposition", "inline; filename=\"" + fileName + "\"; filename*=UTF-8''"
+        + Rfc5987Util.encode(fileName, "UTF-8"));
+
+    ctx.result(new FileInputStream(file));
   }
 }

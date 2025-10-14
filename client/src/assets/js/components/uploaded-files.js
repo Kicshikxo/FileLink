@@ -70,7 +70,10 @@ export function UploadedFiles(originalElement) {
         copyFileLinkButton.addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(
-              `${window.location.origin}/api/files/download/${file.fileId}`,
+              file.fileShortId ?
+                `${window.location.origin}/id/${file.fileShortId}` :
+                `${window.location.origin}/api/files/download/${file.fileId}`
+              ,
             )
             alert(`Ссылка на файл "${file.fileName}" скопирована`)
           } catch (error) {

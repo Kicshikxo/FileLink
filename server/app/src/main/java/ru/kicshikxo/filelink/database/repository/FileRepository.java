@@ -1,5 +1,6 @@
 package ru.kicshikxo.filelink.database.repository;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
@@ -12,17 +13,14 @@ public class FileRepository {
     return Database.queryFirst(
         "SELECT * FROM files WHERE file_id = ?",
         preparedStatement -> preparedStatement.setObject(1, fileId),
-        resultSet -> new FileDto(
-            (UUID) resultSet.getObject("file_id"),
-            (UUID) resultSet.getObject("user_id"),
-            resultSet.getString("file_name"),
-            resultSet.getLong("file_size"),
-            resultSet.getTimestamp("created_at"),
-            resultSet.getTimestamp("updated_at"),
-            resultSet.getTimestamp("deleted_at") != null ? resultSet.getTimestamp("deleted_at")
-                : null,
-            resultSet.getTimestamp("expired_at") != null ? resultSet.getTimestamp("expired_at")
-                : null));
+        FileRepository::fileDtoResultSet);
+  }
+
+  public static FileDto getByIndex(long fileIndex) throws SQLException {
+    return Database.queryFirst(
+        "SELECT * FROM files WHERE file_index = ?",
+        preparedStatement -> preparedStatement.setObject(1, fileIndex),
+        FileRepository::fileDtoResultSet);
   }
 
   public static void renameById(UUID fileId, String fileName) throws SQLException {
@@ -50,17 +48,7 @@ public class FileRepository {
     return Database.query(
         "SELECT * FROM files WHERE user_id = ? AND deleted_at IS NULL AND expired_at IS NULL ORDER BY created_at DESC",
         preparedStatement -> preparedStatement.setObject(1, userId),
-        resultSet -> new FileDto(
-            (UUID) resultSet.getObject("file_id"),
-            (UUID) resultSet.getObject("user_id"),
-            resultSet.getString("file_name"),
-            resultSet.getLong("file_size"),
-            resultSet.getTimestamp("created_at"),
-            resultSet.getTimestamp("updated_at"),
-            resultSet.getTimestamp("deleted_at") != null ? resultSet.getTimestamp("deleted_at")
-                : null,
-            resultSet.getTimestamp("expired_at") != null ? resultSet.getTimestamp("expired_at")
-                : null));
+        FileRepository::fileDtoResultSet);
   }
 
   public static void createWithId(UUID fileId, UUID userId, String fileName, long fileSize) throws SQLException {
@@ -93,15 +81,21 @@ public class FileRepository {
         "  AND files.expired_at IS NULL " +
         "  AND COALESCE(last_downloads.last_download_time, files.created_at) < NOW() - INTERVAL '1 day'";
 
-    return Database.query(sql, null, resultSet -> new FileDto(
+    return Database.query(sql, null, FileRepository::fileDtoResultSet);
+  }
+
+  private static FileDto fileDtoResultSet(ResultSet resultSet) throws SQLException {
+    return new FileDto(
         (UUID) resultSet.getObject("file_id"),
         (UUID) resultSet.getObject("user_id"),
+        resultSet.getLong("file_index"),
         resultSet.getString("file_name"),
         resultSet.getLong("file_size"),
         resultSet.getTimestamp("created_at"),
         resultSet.getTimestamp("updated_at"),
-        resultSet.getTimestamp("deleted_at") != null ? resultSet.getTimestamp("deleted_at") : null,
-        resultSet.getTimestamp("expired_at") != null ? resultSet.getTimestamp("expired_at") : null));
+        resultSet.getTimestamp("deleted_at") != null ? resultSet.getTimestamp("deleted_at")
+            : null,
+        resultSet.getTimestamp("expired_at") != null ? resultSet.getTimestamp("expired_at")
+            : null);
   }
-
 }

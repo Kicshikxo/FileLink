@@ -18,6 +18,10 @@ export default defineConfig({
         target: process.env.API_URL || 'http://localhost:7070',
         changeOrigin: true,
       },
+      '/id': {
+        target: process.env.API_URL || 'http://localhost:7070',
+        changeOrigin: true,
+      },
     },
   },
 
@@ -26,6 +30,10 @@ export default defineConfig({
     allowedHosts: true,
     proxy: {
       '/api': {
+        target: process.env.API_URL || 'http://localhost:7070',
+        changeOrigin: true,
+      },
+      '/id': {
         target: process.env.API_URL || 'http://localhost:7070',
         changeOrigin: true,
       },

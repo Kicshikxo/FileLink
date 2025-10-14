@@ -16,6 +16,7 @@ import ru.kicshikxo.filelink.database.repository.FileDownloadsRepository;
 import ru.kicshikxo.filelink.database.repository.FileRepository;
 import ru.kicshikxo.filelink.dto.file.DailyDownloadStatsDto;
 import ru.kicshikxo.filelink.dto.file.FileDto;
+import ru.kicshikxo.filelink.util.ShortId;
 
 public class FileService {
   private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -25,12 +26,25 @@ public class FileService {
   private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
   private static final long MAX_USER_FILES_SIZE = 1L * 1024 * 1024 * 1024;
 
-  public File getFileById(UUID fileId) throws SQLException {
+  public FileDto getById(UUID fileId) throws SQLException {
     FileDto fileDto = FileRepository.getById(fileId);
     if (fileDto == null) {
       throw new NotFoundResponse("FILE NOT FOUND");
     }
 
+    return fileDto;
+  }
+
+  public FileDto getByShortId(String shortId) throws SQLException {
+    FileDto fileDto = FileRepository.getByIndex(ShortId.decode(shortId));
+    if (fileDto == null) {
+      throw new NotFoundResponse("FILE NOT FOUND");
+    }
+
+    return fileDto;
+  }
+
+  public File getFileById(UUID fileId) throws SQLException {
     File uploadsDirectory = new File(UPLOADS_DIRECTORY);
     if (!uploadsDirectory.exists()) {
       throw new NotFoundResponse("UPLOADS DIRECTORY NOT FOUND");
@@ -50,10 +64,7 @@ public class FileService {
   }
 
   public void renameFileById(UUID fileId, String newFileName) throws SQLException {
-    FileDto fileDto = FileRepository.getById(fileId);
-    if (fileDto == null) {
-      throw new NotFoundResponse("FILE NOT FOUND");
-    }
+    FileDto fileDto = getById(fileId);
 
     if (fileDto.getDeletedAt() != null) {
       throw new NotFoundResponse("FILE DELETED");
@@ -80,12 +91,9 @@ public class FileService {
   }
 
   public void deleteFileById(UUID fileId) throws SQLException {
-    FileDto fileDto = FileRepository.getById(fileId);
-    if (fileDto == null) {
-      throw new NotFoundResponse("FILE NOT FOUND");
-    }
-
+    FileDto fileDto = getById(fileId);
     File file = getFileById(fileId);
+
     file.delete();
     FileRepository.deleteById(fileId);
   }

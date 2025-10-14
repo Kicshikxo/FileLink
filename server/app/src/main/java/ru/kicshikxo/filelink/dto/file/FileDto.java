@@ -3,9 +3,13 @@ package ru.kicshikxo.filelink.dto.file;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import ru.kicshikxo.filelink.util.ShortId;
+
 public class FileDto {
   private UUID fileId;
   private UUID userId;
+  private long fileIndex;
+  private String fileShortId;
   private String fileName;
   private long fileSize;
   private Timestamp createdAt;
@@ -16,11 +20,12 @@ public class FileDto {
   public FileDto() {
   }
 
-  public FileDto(UUID fileId, UUID userId, String name, long size,
-      Timestamp createdAt, Timestamp updatedAt,
+  public FileDto(UUID fileId, UUID userId, long index, String name, long size, Timestamp createdAt, Timestamp updatedAt,
       Timestamp deletedAt, Timestamp expiredAt) {
     this.fileId = fileId;
     this.userId = userId;
+    this.fileIndex = index;
+    this.fileShortId = ShortId.encode(index);
     this.fileName = name;
     this.fileSize = size;
     this.createdAt = createdAt;
@@ -35,6 +40,14 @@ public class FileDto {
 
   public UUID getUserId() {
     return userId;
+  }
+
+  public long getFileIndex() {
+    return fileIndex;
+  }
+
+  public String getFileShortId() {
+    return fileShortId;
   }
 
   public String getFileName() {

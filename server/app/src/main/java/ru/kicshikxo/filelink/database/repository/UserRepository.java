@@ -1,5 +1,6 @@
 package ru.kicshikxo.filelink.database.repository;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
@@ -14,35 +15,29 @@ public class UserRepository {
           preparedStatement.setString(1, email);
           preparedStatement.setString(2, password_hash);
         },
-        resultSet -> new UserDto(
-            (UUID) resultSet.getObject("user_id"),
-            resultSet.getString("email"),
-            resultSet.getString("password_hash"),
-            resultSet.getTimestamp("created_at"),
-            resultSet.getTimestamp("updated_at")));
+        UserRepository::userDtoResultSet);
   }
 
   public static UserDto getById(UUID userId) throws SQLException {
     return Database.queryFirst(
         "SELECT * FROM users WHERE user_id = ?",
         preparedStatement -> preparedStatement.setObject(1, userId),
-        resultSet -> new UserDto(
-            (UUID) resultSet.getObject("user_id"),
-            resultSet.getString("email"),
-            resultSet.getString("password_hash"),
-            resultSet.getTimestamp("created_at"),
-            resultSet.getTimestamp("updated_at")));
+        UserRepository::userDtoResultSet);
   }
 
   public static UserDto getByEmail(String email) throws SQLException {
     return Database.queryFirst(
         "SELECT * FROM users WHERE email = ?",
         preparedStatement -> preparedStatement.setString(1, email),
-        resultSet -> new UserDto(
-            (UUID) resultSet.getObject("user_id"),
-            resultSet.getString("email"),
-            resultSet.getString("password_hash"),
-            resultSet.getTimestamp("created_at"),
-            resultSet.getTimestamp("updated_at")));
+        UserRepository::userDtoResultSet);
+  }
+
+  private static UserDto userDtoResultSet(ResultSet resultSet) throws SQLException {
+    return new UserDto(
+        (UUID) resultSet.getObject("user_id"),
+        resultSet.getString("email"),
+        resultSet.getString("password_hash"),
+        resultSet.getTimestamp("created_at"),
+        resultSet.getTimestamp("updated_at"));
   }
 }
