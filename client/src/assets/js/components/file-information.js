@@ -36,7 +36,7 @@ export function FileInformation(originalElement) {
     </div>
     <span class="file-information__loader">${LoadingIcon}</span>
     <span class="file-information__empty">Файл не найден или недоступен</span>
-    <span class="file-information__chart-title">Количество загрузок</span>
+    <span class="file-information__chart-title">Количество просмотров/скачиваний</span>
     <div style="width: 100%; height: 300px;">
       <canvas class="file-information__chart"></canvas>
     </div>
