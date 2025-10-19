@@ -92,10 +92,10 @@ public class FileService {
 
   public void deleteFileById(UUID fileId) throws SQLException {
     FileDto fileDto = getById(fileId);
-    File file = getFileById(fileId);
+    File file = getFileById(fileDto.getFileId());
 
     file.delete();
-    FileRepository.deleteById(fileId);
+    FileRepository.deleteById(fileDto.getFileId());
   }
 
   public List<DailyDownloadStatsDto> getFileStatisticsById(UUID fileId, int days) throws SQLException {
