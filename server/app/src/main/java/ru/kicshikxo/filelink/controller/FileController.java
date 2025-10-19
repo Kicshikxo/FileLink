@@ -205,8 +205,6 @@ public class FileController {
     }
     ctx.contentType(contentType);
 
-    ctx.header("Content-Length", String.valueOf(file.length()));
-
     String fileName = fileDto.getFileName().replace("\"", "\\\"");
     ctx.header("Content-Disposition", "inline; filename=\"" + fileName + "\"; filename*=UTF-8''"
         + Rfc5987Util.encode(fileName, "UTF-8"));
