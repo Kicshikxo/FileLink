@@ -28,7 +28,9 @@ export function FileInformation(originalElement) {
       </div>
       <div class="file-information__actions">
         <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
-        <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
+        <a class="copy-file-link">
+          <button class="app-button app-button--primary app-button--small copy-file-link-button" style="width: 100%">Ссылка</button>
+        </a>
         <a download class="download-file-link">
           <button class="app-button app-button--success app-button--small" style="width: 100%">Скачать</button>
         </a>
@@ -51,6 +53,7 @@ export function FileInformation(originalElement) {
   const renameFileButton = component.querySelector('.rename-file-button')
   const deleteFileButton = component.querySelector('.delete-file-button')
   const copyFileLinkButton = component.querySelector('.copy-file-link-button')
+  const copyFileLink = component.querySelector('.copy-file-link')
   const downloadFileLink = component.querySelector('.download-file-link')
 
   const containerLoader = component.querySelector('.file-information__loader')
@@ -61,6 +64,9 @@ export function FileInformation(originalElement) {
 
   let chartInstance = null
 
+  copyFileLink.addEventListener('click', (event) => {
+    event.preventDefault()
+  })
   copyFileLinkButton.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(
@@ -164,6 +170,9 @@ export function FileInformation(originalElement) {
       containerEmpty.style.display = value?.data?.length ? 'none' : 'block'
       chartTitle.style.display = value?.data?.length ? 'block' : 'none'
       chart.style.display = value?.data?.length ? 'block' : 'none'
+      copyFileLink.href = filesState.statistics.file.fileShortId ?
+        `${window.location.origin}/id/${filesState.statistics.file.fileShortId}` :
+        `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`
       downloadFileLink.href = `/api/files/download/${filesState.statistics?.file?.fileId}`
 
       if (value?.file?.fileName && value?.file?.fileSize && value?.file?.createdAt) {

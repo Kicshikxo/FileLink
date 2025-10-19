@@ -40,7 +40,12 @@ export function UploadedFiles(originalElement) {
             <a href="/information?fileId=${file.fileId}">
               <button class="app-button app-button--small">Информация</button>
             </a>
-            <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
+            <a
+              href="${file.fileShortId ? `${window.location.origin}/id/${file.fileShortId}` : `${window.location.origin}/api/files/download/${file.fileId}`}"
+              class="copy-file-link"
+            >
+              <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
+            </a>
             <a href="/api/files/download/${file.fileId}" download>
               <button class="app-button app-button--success app-button--small">Скачать</button>
             </a>
@@ -48,9 +53,12 @@ export function UploadedFiles(originalElement) {
         `
 
         const deleteFileButton = fileItem.querySelector('.delete-file-button')
+        const copyFileLink = fileItem.querySelector('.copy-file-link')
         const copyFileLinkButton = fileItem.querySelector('.copy-file-link-button')
 
-        deleteFileButton.addEventListener('click', async () => {
+        deleteFileButton.addEventListener('click', async (event) => {
+          event.preventDefault()
+
           deleteFileButton.disabled = true
           try {
             const success = await deleteFile(file.fileId)
@@ -67,6 +75,9 @@ export function UploadedFiles(originalElement) {
           }
         })
 
+        copyFileLink.addEventListener('click', (event) => {
+          event.preventDefault()
+        })
         copyFileLinkButton.addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(
