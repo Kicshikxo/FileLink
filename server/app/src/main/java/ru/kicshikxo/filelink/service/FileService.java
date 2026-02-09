@@ -7,11 +7,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import io.javalin.config.SizeUnit;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UploadedFile;
 import io.javalin.util.FileUtil;
+import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.database.repository.FileDownloadsRepository;
 import ru.kicshikxo.filelink.database.repository.FileRepository;
 import ru.kicshikxo.filelink.dto.file.DailyDownloadStatsDto;
@@ -19,13 +20,6 @@ import ru.kicshikxo.filelink.dto.file.FileDto;
 import ru.kicshikxo.filelink.util.ShortId;
 
 public class FileService {
-  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-
-  private static final String UPLOADS_DIRECTORY = dotenv.get("UPLOADS_DIRECTORY", "uploads");
-
-  private static final long MAX_FILE_SIZE = 100L * 1024 * 1024;
-  private static final long MAX_USER_FILES_SIZE = 1L * 1024 * 1024 * 1024;
-
   public FileDto getById(UUID fileId) throws SQLException {
     FileDto fileDto = FileRepository.getById(fileId);
     if (fileDto == null) {
@@ -45,7 +39,7 @@ public class FileService {
   }
 
   public File getFileById(UUID fileId) throws SQLException {
-    File uploadsDirectory = new File(UPLOADS_DIRECTORY);
+    File uploadsDirectory = new File(ServerConfig.UPLOADS_DIRECTORY);
     if (!uploadsDirectory.exists()) {
       throw new NotFoundResponse("UPLOADS DIRECTORY NOT FOUND");
     }
@@ -108,19 +102,21 @@ public class FileService {
     }
 
     for (UploadedFile file : uploadedFiles) {
-      if (file.size() > MAX_FILE_SIZE) {
-        throw new BadRequestResponse("FILE " + file.filename() + " EXCEEDS THE MAXIMUM SIZE OF 100 MB");
+      if (file.size() > ServerConfig.MAX_FILE_SIZE_BYTES) {
+        throw new BadRequestResponse("FILE " + file.filename() + " EXCEEDS THE MAXIMUM SIZE OF "
+            + (ServerConfig.MAX_FILE_SIZE_BYTES / SizeUnit.MB.getMultiplier()) + " MB");
       }
     }
 
     long userFilesSize = FileRepository.getUserFilesSize(userId);
     long uploadedFilesSize = uploadedFiles.stream().mapToLong(UploadedFile::size).sum();
 
-    if (userFilesSize + uploadedFilesSize > MAX_USER_FILES_SIZE) {
-      throw new BadRequestResponse("EXCEEDED 1 GB STORAGE LIMIT");
+    if (userFilesSize + uploadedFilesSize > ServerConfig.MAX_USER_FILES_SIZE_BYTES) {
+      throw new BadRequestResponse(
+          "EXCEEDED " + (ServerConfig.MAX_USER_FILES_SIZE_BYTES / SizeUnit.MB.getMultiplier()) + " MB STORAGE LIMIT");
     }
 
-    File uploadsDirectory = new File(UPLOADS_DIRECTORY);
+    File uploadsDirectory = new File(ServerConfig.UPLOADS_DIRECTORY);
     if (!uploadsDirectory.exists()) {
       uploadsDirectory.mkdirs();
     }
@@ -129,7 +125,7 @@ public class FileService {
     for (UploadedFile uploadedFile : uploadedFiles) {
       UUID fileUuid = UUID.randomUUID();
       String extension = getFileExtension(uploadedFile.filename());
-      File savedFile = new File(UPLOADS_DIRECTORY, fileUuid + extension);
+      File savedFile = new File(ServerConfig.UPLOADS_DIRECTORY, fileUuid + extension);
 
       FileUtil.streamToFile(uploadedFile.content(), savedFile.toString());
       FileRepository.createWithId(fileUuid, userId, uploadedFile.filename(), uploadedFile.size());

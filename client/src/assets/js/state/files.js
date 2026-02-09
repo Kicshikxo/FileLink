@@ -2,6 +2,7 @@ import { createState } from '~/assets/js/state'
 
 export const filesState = createState(
   {
+    checkFiles: false,
     uploading: false,
     progress: 0,
     files: undefined,

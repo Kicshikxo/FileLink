@@ -58,10 +58,14 @@
 }
 
 .upload-area--dragover .upload-text--default,
+.upload-area--check-files .upload-text--default,
 .upload-area--uploading .upload-text--default {
   display: none;
 }
 .upload-area--dragover .upload-text--dragover {
+  display: block;
+}
+.upload-area--check-files .upload-text--check-files {
   display: block;
 }
 .upload-area--uploading .upload-text--uploading {

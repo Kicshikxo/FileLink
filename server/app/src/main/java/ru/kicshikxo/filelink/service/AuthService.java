@@ -9,21 +9,16 @@ import javax.crypto.SecretKey;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.database.repository.UserRepository;
 import ru.kicshikxo.filelink.dto.file.UserDto;
 
 public class AuthService {
-  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-
-  public static final String AUTH_COOKIE_NAME = dotenv.get("AUTH_COOKIE_NAME", "filelink-token");
-  private static final String JWT_SECRET_KEY = dotenv.get("JWT_SECRET_KEY");
-  private static final SecretKey KEY = Keys.hmacShaKeyFor(JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-
-  public static final int EXPIRATION_SECONDS = 30 * 24 * 60 * 60;
+  private static final SecretKey SECRET_KEY = Keys
+      .hmacShaKeyFor(ServerConfig.JWT_SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
   public String login(String email, String password) throws SQLException, RuntimeException {
     UserDto user = UserRepository.getByEmail(email);
@@ -54,8 +49,8 @@ public class AuthService {
     return Jwts.builder()
         .subject(userId.toString())
         .issuedAt(new Date(now))
-        .expiration(new Date(now + EXPIRATION_SECONDS * 1000L))
-        .signWith(KEY)
+        .expiration(new Date(now + ServerConfig.JWT_EXPIRATION_SECONDS * 1000L))
+        .signWith(SECRET_KEY)
         .compact();
   }
 
@@ -63,7 +58,7 @@ public class AuthService {
     try {
 
       Claims claims = Jwts.parser()
-          .verifyWith(KEY)
+          .verifyWith(SECRET_KEY)
           .build()
           .parseSignedClaims(token)
           .getPayload();

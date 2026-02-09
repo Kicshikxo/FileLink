@@ -1,6 +1,7 @@
 import UploadIcon from '~/assets/icons/line-md--file-upload-filled.svg?raw'
-import { uploadFiles } from '~/assets/js/api/files'
+import { getFilesLimits, uploadFiles } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
+import { formatFileSize } from '~/assets/js/utils'
 
 import '~/assets/css/components/upload-area.css'
 
@@ -15,6 +16,7 @@ export function UploadArea(originalElement) {
       <span class="upload-icon">${UploadIcon}</span>
       <p class="upload-text upload-text--default">Перетащите файлы или нажмите, чтобы выбрать</p>
       <p class="upload-text upload-text--dragover">Отпустите файлы, чтобы загрузить</p>
+      <p class="upload-text upload-text--check-files">Проверка файлов</p>
       <p class="upload-text upload-text--uploading">Дождитесь загрузки файлов</p>
     </div>
   `
@@ -23,7 +25,7 @@ export function UploadArea(originalElement) {
   const uploadAreaInput = uploadArea.querySelector('[data-role="input"]')
 
   component.addEventListener('click', () => {
-    if (filesState.uploading) return
+    if (filesState.checkFiles || filesState.uploading) return
     uploadAreaInput.click()
   })
 
@@ -41,7 +43,7 @@ export function UploadArea(originalElement) {
     handleFilesInput(event.dataTransfer.files)
   })
   component.addEventListener('paste', (event) => {
-    const items = event.clipboardData.items;
+    const items = event.clipboardData.items
     const files = []
     for (const item of items) {
       if (item.kind === 'file') {
@@ -50,48 +52,67 @@ export function UploadArea(originalElement) {
     }
 
     handleFilesInput(files)
-  });
+  })
 
   uploadAreaInput.addEventListener('change', (event) => {
     handleFilesInput(event.target.files)
   })
 
   async function handleFilesInput(files) {
-    if (filesState.uploading) return
+    if (filesState.checkFiles || filesState.uploading) return
     if (!files.length) return
 
-    const maxFileSize = 100 * 1024 * 1024 // 100 MB
-    for (const file of files) {
-      if (file.size > maxFileSize) {
-        alert(`Файл "${file.name}" превышает 100 МБ и не может быть загружен.`)
-        return
-      }
-    }
-
-    const maxRequestSize = 1024 * 1024 * 1024 // 1 GB
-    const totalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0)
-    if (totalSize > maxRequestSize) {
-      alert('Суммарный размер выбранных файлов превышает 1 ГБ и не может быть загружен.')
-      return
-    }
-
-    filesState.uploading = true
-    filesState.progress = 0
-
     try {
-      const uploadedFiles = await uploadFiles(files, (percent) => (filesState.progress = percent))
-      filesState.files = (filesState.files ?? []).concat(uploadedFiles)
-    } catch (error) {
-      console.error(error)
-      alert(`Ошибка при загрузке: ${error.response.data.title}`)
+      filesState.checkFiles = true
+
+      try {
+        const { maxFileSizeBytes, maxUserFilesSizeBytes, remainingUserBytes } =
+          await getFilesLimits()
+
+        for (const file of files) {
+          if (file.size > maxFileSizeBytes) {
+            alert(
+              `Файл "${file.name}" слишком большой (максимум ${formatFileSize(maxFileSizeBytes)})`,
+            )
+            return
+          }
+        }
+
+        const totalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0)
+        if (totalSize > remainingUserBytes) {
+          alert(`Превышен лимит загрузки (осталось ${formatFileSize(remainingUserBytes)})`)
+          return
+        }
+      } catch (error) {
+        console.error(error)
+        alert(`Ошибка проверки размеров файлов`)
+        return
+      } finally {
+        filesState.checkFiles = false
+      }
+
+      filesState.uploading = true
+      filesState.progress = 0
+
+      try {
+        const uploadedFiles = await uploadFiles(files, (percent) => (filesState.progress = percent))
+        filesState.files = (filesState.files ?? []).concat(uploadedFiles)
+      } catch (error) {
+        console.error(error)
+        alert(`Ошибка при загрузке: ${error.response.data.title}`)
+      } finally {
+        filesState.uploading = false
+      }
     } finally {
-      filesState.uploading = false
       uploadAreaInput.value = ''
     }
   }
 
   document.addEventListener('filesStateChange', (event) => {
     const { key, value } = event.detail
+    if (key === 'checkFiles') {
+      uploadArea.classList.toggle('upload-area--check-files', value)
+    }
     if (key === 'uploading') {
       uploadArea.classList.toggle('upload-area--uploading', value)
     }

@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.cdimascio.dotenv.Dotenv;
+import ru.kicshikxo.filelink.config.ServerConfig;
 
 public class Database {
 
@@ -22,14 +22,9 @@ public class Database {
     R apply(T t) throws SQLException;
   }
 
-  private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-
-  private static final String URL = dotenv.get("DATABASE_URL");
-  private static final String USER = dotenv.get("DATABASE_USER");
-  private static final String PASSWORD = dotenv.get("DATABASE_PASSWORD");
-
   public static Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(URL, USER, PASSWORD);
+    return DriverManager.getConnection(
+        ServerConfig.DATABASE_URL, ServerConfig.DATABASE_USER, ServerConfig.DATABASE_PASSWORD);
   }
 
   public static int update(String sqlQuery, StatementSetter<PreparedStatement> statementSetter)

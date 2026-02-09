@@ -1,5 +1,11 @@
 import axios from 'axios'
 
+export async function getFilesLimits() {
+  const response = await axios.get('/api/files/limits')
+
+  return response.data
+}
+
 export async function getUploadedFiles() {
   const response = await axios.get('/api/files/list')
 

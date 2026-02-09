@@ -17,6 +17,7 @@ import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UploadedFile;
 import io.javalin.http.util.NaiveRateLimit;
+import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.database.repository.FileDownloadsRepository;
 import ru.kicshikxo.filelink.database.repository.FileRepository;
 import ru.kicshikxo.filelink.dto.file.FileDto;
@@ -28,21 +29,44 @@ public class FileController {
   private final FileService fileService = new FileService();
 
   public void registerRoutes(Javalin app) {
-    app.before("/api/files/list", new AuthMiddleware()::handle);
+    app.before("/api/files/limits", new AuthMiddleware(false)::handle);
     app.before("/api/files/upload", new AuthMiddleware()::handle);
+    app.before("/api/files/list", new AuthMiddleware()::handle);
     app.before("/api/files/rename/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/delete/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/statistics/{fileId}", new AuthMiddleware()::handle);
     app.before("/api/files/download/{fileId}", new AuthMiddleware(false)::handle);
     app.before("/id/{shortId}", new AuthMiddleware(false)::handle);
 
-    app.get("/api/files/list", this::list);
+    app.get("/api/files/limits", this::limits);
     app.post("/api/files/upload", this::upload);
+    app.get("/api/files/list", this::list);
     app.patch("/api/files/rename/{fileId}", this::rename);
     app.delete("/api/files/delete/{fileId}", this::delete);
     app.get("/api/files/statistics/{fileId}", this::statistics);
     app.get("/api/files/download/{fileId}", this::download);
     app.get("/id/{shortId}", this::downloadByShortId);
+  }
+
+  private void limits(Context ctx) {
+    NaiveRateLimit.requestPerTimeUnit(ctx, 60, TimeUnit.MINUTES);
+
+    try {
+      UUID userId = ctx.attribute("userId");
+
+      long remainingBytes = -1;
+      if (userId != null) {
+        long usedBytes = FileRepository.getUserFilesSize(userId);
+        remainingBytes = ServerConfig.MAX_USER_FILES_SIZE_BYTES - usedBytes;
+      }
+
+      ctx.json(Map.of(
+          "maxFileSizeBytes", ServerConfig.MAX_FILE_SIZE_BYTES,
+          "maxUserFilesSizeBytes", ServerConfig.MAX_USER_FILES_SIZE_BYTES,
+          "remainingUserBytes", remainingBytes));
+    } catch (Exception error) {
+      throw new InternalServerErrorResponse(error.toString());
+    }
   }
 
   private void upload(Context ctx) {

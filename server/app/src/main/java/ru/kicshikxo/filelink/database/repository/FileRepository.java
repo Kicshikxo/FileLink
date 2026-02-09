@@ -69,7 +69,7 @@ public class FileRepository {
         resultSet -> resultSet.getLong(1));
   }
 
-  public static List<FileDto> getExpiredFiles() throws SQLException {
+  public static List<FileDto> getExpiredFiles(long fileTtlSeconds) throws SQLException {
     String sql = "SELECT files.* " +
         "FROM files " +
         "LEFT JOIN ( " +
@@ -79,9 +79,13 @@ public class FileRepository {
         ") AS last_downloads ON files.file_id = last_downloads.file_id " +
         "WHERE files.deleted_at IS NULL " +
         "  AND files.expired_at IS NULL " +
-        "  AND COALESCE(last_downloads.last_download_time, files.created_at) < NOW() - INTERVAL '1 day'";
+        "  AND COALESCE(last_downloads.last_download_time, files.created_at) " +
+        "      < NOW() - (? * INTERVAL '1 second')";
 
-    return Database.query(sql, null, FileRepository::fileDtoResultSet);
+    return Database.query(
+        sql,
+        ps -> ps.setLong(1, fileTtlSeconds),
+        FileRepository::fileDtoResultSet);
   }
 
   private static FileDto fileDtoResultSet(ResultSet resultSet) throws SQLException {

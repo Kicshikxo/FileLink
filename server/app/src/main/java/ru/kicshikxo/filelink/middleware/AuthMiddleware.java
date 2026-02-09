@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import io.javalin.http.Context;
 import io.javalin.http.UnauthorizedResponse;
+import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.database.repository.UserRepository;
 import ru.kicshikxo.filelink.service.AuthService;
 
@@ -22,7 +23,7 @@ public class AuthMiddleware {
 
   public void handle(Context ctx) {
     String headerToken = ctx.header("Authorization");
-    String cookieToken = ctx.cookie(AuthService.AUTH_COOKIE_NAME);
+    String cookieToken = ctx.cookie(ServerConfig.AUTH_COOKIE_NAME);
 
     String token = headerToken != null ? headerToken.substring("Bearer ".length()) : cookieToken;
 
