@@ -87,14 +87,19 @@ npm run preview
 Создайте файл .env рядом с сервером или используйте export:
 
 ```bash
+export PORT=7070
+
 export DB_URL=jdbc:postgresql://localhost:5432/postgres
 export DB_USER=postgres
 export DB_PASSWORD=password
 
 export AUTH_COOKIE_NAME="filelink-token"
 export JWT_SECRET_KEY="yLZf4GOP+xk+eZ60VmpVDPhxRjcpuuWh8FWM22ZIjV0="
+export JWT_EXPIRATION_SECONDS=2592000 # 30 * 24 * 60 * 60 = 30 days
 
-export PORT=7070
+export MAX_FILE_SIZE_BYTES=104857600 # 100 * 1024 * 1024 = 100 MB
+export MAX_USER_FILES_SIZE_BYTES=1073741824 # 1024 * 1024 * 1024 = 1 GB
+export FILE_TTL_SECONDS=86400 # 24 * 60 * 60 = 1 day
 export UPLOADS_DIRECTORY="uploads"
 ```
 
