@@ -45,8 +45,7 @@ async function authMiddleware() {
 
     if (error?.response?.status === 401) {
       authState.isAuth = false
-    }
-    else if (error?.response?.status === 500) {
+    } else if (error?.response?.status === 500) {
       alert('Ошибка сервера')
     }
   }

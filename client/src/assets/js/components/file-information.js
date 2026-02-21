@@ -70,9 +70,9 @@ export function FileInformation(originalElement) {
   copyFileLinkButton.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(
-        filesState.statistics.file.fileShortId ?
-          `${window.location.origin}/id/${filesState.statistics.file.fileShortId}` :
-          `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`,
+        filesState.statistics.file.fileShortId
+          ? `${window.location.origin}/id/${filesState.statistics.file.fileShortId}`
+          : `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`,
       )
       alert(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
     } catch (error) {
@@ -88,10 +88,7 @@ export function FileInformation(originalElement) {
     fileName.disabled = true
     renameFileButton.disabled = true
     try {
-      const success = await renameFile(
-        filesState.statistics.file.fileId,
-        fileName.value,
-      )
+      const success = await renameFile(filesState.statistics.file.fileId, fileName.value)
       if (success) {
         filesState.statistics.file.fileName = fileName.value
       }
@@ -110,9 +107,9 @@ export function FileInformation(originalElement) {
       const success = await deleteFile(filesState.statistics.file.fileId)
       if (success) {
         if (window.history.length > 1 && document.referrer) {
-          window.history.back();
+          window.history.back()
         } else {
-          window.location.href = '/';
+          window.location.href = '/'
         }
       }
     } catch (error) {
@@ -170,9 +167,9 @@ export function FileInformation(originalElement) {
       containerEmpty.style.display = value?.data?.length ? 'none' : 'block'
       chartTitle.style.display = value?.data?.length ? 'block' : 'none'
       chart.style.display = value?.data?.length ? 'block' : 'none'
-      copyFileLink.href = filesState.statistics.file.fileShortId ?
-        `${window.location.origin}/id/${filesState.statistics.file.fileShortId}` :
-        `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`
+      copyFileLink.href = filesState.statistics.file.fileShortId
+        ? `${window.location.origin}/id/${filesState.statistics.file.fileShortId}`
+        : `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`
       downloadFileLink.href = `/api/files/download/${filesState.statistics?.file?.fileId}`
 
       if (value?.file?.fileName && value?.file?.fileSize && value?.file?.createdAt) {

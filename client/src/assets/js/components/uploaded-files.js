@@ -36,19 +36,27 @@ export function UploadedFiles(originalElement) {
             ${file.fileName} <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span>
           </span>
           <div class="uploaded-files__list-item__actions">
+            ${
+              file.expiredAt
+                ? /*html*/ `
+                <div class="uploaded-files__list-item__expired">Файл устарел ${new Date(file.expiredAt).toLocaleDateString('ru-RU')}</div>
+                `
+                : /*html*/ `
+                <a href="/information?fileId=${file.fileId}">
+                  <button class="app-button app-button--small">Информация</button>
+                </a>
+                <a
+                  href="${file.fileShortId ? `${window.location.origin}/id/${file.fileShortId}` : `${window.location.origin}/api/files/download/${file.fileId}`}"
+                  class="copy-file-link"
+                >
+                  <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
+                </a>
+                <a href="/api/files/download/${file.fileId}" download>
+                  <button class="app-button app-button--success app-button--small">Скачать</button>
+                </a>
+                `
+            }
             <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
-            <a href="/information?fileId=${file.fileId}">
-              <button class="app-button app-button--small">Информация</button>
-            </a>
-            <a
-              href="${file.fileShortId ? `${window.location.origin}/id/${file.fileShortId}` : `${window.location.origin}/api/files/download/${file.fileId}`}"
-              class="copy-file-link"
-            >
-              <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
-            </a>
-            <a href="/api/files/download/${file.fileId}" download>
-              <button class="app-button app-button--success app-button--small">Скачать</button>
-            </a>
           </div>
         `
 
@@ -56,7 +64,7 @@ export function UploadedFiles(originalElement) {
         const copyFileLink = fileItem.querySelector('.copy-file-link')
         const copyFileLinkButton = fileItem.querySelector('.copy-file-link-button')
 
-        deleteFileButton.addEventListener('click', async (event) => {
+        deleteFileButton?.addEventListener('click', async (event) => {
           event.preventDefault()
 
           deleteFileButton.disabled = true
@@ -75,16 +83,15 @@ export function UploadedFiles(originalElement) {
           }
         })
 
-        copyFileLink.addEventListener('click', (event) => {
+        copyFileLink?.addEventListener('click', (event) => {
           event.preventDefault()
         })
-        copyFileLinkButton.addEventListener('click', async () => {
+        copyFileLinkButton?.addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(
-              file.fileShortId ?
-                `${window.location.origin}/id/${file.fileShortId}` :
-                `${window.location.origin}/api/files/download/${file.fileId}`
-              ,
+              file.fileShortId
+                ? `${window.location.origin}/id/${file.fileShortId}`
+                : `${window.location.origin}/api/files/download/${file.fileId}`,
             )
             alert(`Ссылка на файл "${file.fileName}" скопирована`)
           } catch (error) {

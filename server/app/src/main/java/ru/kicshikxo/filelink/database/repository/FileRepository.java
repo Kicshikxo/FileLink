@@ -46,7 +46,7 @@ public class FileRepository {
 
   public static List<FileDto> getByUserId(UUID userId) throws SQLException {
     return Database.query(
-        "SELECT * FROM files WHERE user_id = ? AND deleted_at IS NULL AND expired_at IS NULL ORDER BY created_at DESC",
+        "SELECT * FROM files WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC",
         preparedStatement -> preparedStatement.setObject(1, userId),
         FileRepository::fileDtoResultSet);
   }
