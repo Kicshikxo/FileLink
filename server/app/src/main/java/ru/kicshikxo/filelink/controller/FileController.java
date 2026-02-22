@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.cxf.attachment.Rfc5987Util;
 
 import io.javalin.Javalin;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.GoneResponse;
 import io.javalin.http.InternalServerErrorResponse;
@@ -101,7 +102,11 @@ public class FileController {
     try {
       UUID userId = ctx.attribute("userId");
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
+
       String fileName = ctx.bodyAsClass(RenameFileRequestDto.class).getName();
+      if (fileName == null || fileName.isEmpty()) {
+        throw new BadRequestResponse("INVALID FILE NAME");
+      }
 
       FileDto fileDto = FileRepository.getById(fileId);
       if (fileDto == null) {

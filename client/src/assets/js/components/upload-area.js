@@ -99,7 +99,7 @@ export function UploadArea(originalElement) {
         filesState.files = (filesState.files ?? []).concat(uploadedFiles)
       } catch (error) {
         console.error(error)
-        alert(`Ошибка при загрузке: ${error.response.data.title}`)
+        alert(`Ошибка при загрузке: ${error.response?.data?.title ?? error.message}`)
       } finally {
         filesState.uploading = false
       }

@@ -17,7 +17,7 @@ export function FileInformation(originalElement) {
       <div class="file-information__file-info">
         <span class="file-information__file-info-item">
           Название: <input class="app-input app-input--small file-information__info-item--name"></input>
-          <button class="app-button app-button--small rename-file-button" disabled>Переименовать</button>
+          <button class="app-button app-button--small app-button--not-allowed-on-disabled rename-file-button" disabled>Переименовать</button>
         </span>
         <span class="file-information__file-info-item">
           Размер: <span class="file-information__info-item--size"></span>
@@ -85,6 +85,7 @@ export function FileInformation(originalElement) {
   renameFileButton.addEventListener('click', async () => {
     fileName.disabled = true
     renameFileButton.disabled = true
+    renameFileButton.classList.remove('app-button--not-allowed-on-disabled')
     try {
       const { success, newFileName } = await renameFile(
         filesState.statistics.file.fileId,
@@ -96,11 +97,11 @@ export function FileInformation(originalElement) {
       }
     } catch (error) {
       console.error(error)
-      renameFileButton.disabled = false
-      alert(`Ошибка при переименований файла: ${error.response.data.title}`)
+      alert(`Ошибка при переименований файла: ${error.response?.data?.title ?? error.message}`)
     } finally {
       fileName.disabled = false
       fileName.value = filesState.statistics.file.fileName
+      renameFileButton.classList.add('app-button--not-allowed-on-disabled')
     }
   })
 
@@ -120,7 +121,7 @@ export function FileInformation(originalElement) {
       }
     } catch (error) {
       console.error(error)
-      alert(`Ошибка при удалении файла: ${error.response.data.title}`)
+      alert(`Ошибка при удалении файла: ${error.response?.data?.title ?? error.message}`)
     } finally {
       deleteFileButton.disabled = false
     }

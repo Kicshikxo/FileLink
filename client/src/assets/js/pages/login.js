@@ -19,7 +19,7 @@ loginForm.addEventListener('submit', async (event) => {
     }
   } catch (error) {
     console.error(error)
-    alert(`Ошибка при входе в систему: ${error.response.data.title}`)
+    alert(`Ошибка при входе в систему: ${error.response?.data?.title ?? error.message}`)
   } finally {
     loginSubmitButton.disabled = false
   }

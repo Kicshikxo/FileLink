@@ -25,7 +25,7 @@ registerForm.addEventListener('submit', async (event) => {
     }
   } catch (error) {
     console.error(error)
-    alert(`Ошибка при регистрации: ${error.response.data.title}`)
+    alert(`Ошибка при регистрации: ${error.response?.data?.title ?? error.message}`)
   } finally {
     registerSubmitButton.disabled = false
   }

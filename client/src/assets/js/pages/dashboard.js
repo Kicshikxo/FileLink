@@ -13,7 +13,7 @@ document.addEventListener('authStateChange', async (event) => {
       filesState.files = (filesState.files ?? []).concat(uploadedFiles)
     } catch (error) {
       console.error(error)
-      alert(`Ошибка получения файлов: ${error.response.data.title}`)
+      alert(`Ошибка получения файлов: ${error.response?.data?.title ?? error.message}`)
     }
   }
 })

@@ -96,7 +96,7 @@ export function UploadedFiles(originalElement) {
             }
           } catch (error) {
             console.error(error)
-            alert(`Ошибка при удалении файла: ${error.response.data.title}`)
+            alert(`Ошибка при удалении файла: ${error.response?.data?.title ?? error.message}`)
           } finally {
             deleteFileButton.disabled = false
           }

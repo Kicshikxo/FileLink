@@ -21,7 +21,11 @@
   border: 1px solid var(--button-border);
 }
 
-.app-button:disabled {
+.app-button.app-button--not-allowed-on-disabled:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+.app-button:not(.app-button--not-allowed-on-disabled):disabled {
   cursor: progress;
   opacity: 0.75;
 }

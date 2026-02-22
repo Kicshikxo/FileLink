@@ -49,7 +49,7 @@ export function Header(originalElement) {
             }
           } catch (error) {
             console.error(error)
-            alert(`Ошибка при выходе из системы: ${error.response.data.title}`)
+            alert(`Ошибка при выходе из системы: ${error.response?.data?.title ?? error.message}`)
           } finally {
             logoutButton.disabled = false
           }
