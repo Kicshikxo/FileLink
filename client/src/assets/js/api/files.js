@@ -23,7 +23,7 @@ export async function getFileStatistics(fileId, days = 7) {
 export async function renameFile(fileId, name) {
   const response = await axios.patch(`/api/files/rename/${fileId}`, { name })
 
-  return response.status === 200
+  return response.data
 }
 
 export async function deleteFile(fileId) {

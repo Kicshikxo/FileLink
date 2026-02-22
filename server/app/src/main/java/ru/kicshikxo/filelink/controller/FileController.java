@@ -118,8 +118,10 @@ public class FileController {
         throw new GoneResponse("FILE EXPIRED");
       }
 
-      fileService.renameFileById(fileId, fileName);
-      ctx.json(Map.of("success", true));
+      String newFileName = fileService.renameFileById(fileId, fileName);
+      ctx.json(Map.of(
+          "success", true,
+          "newFileName", newFileName));
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }

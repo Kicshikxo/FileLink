@@ -73,7 +73,7 @@ public class FileService {
     return FileRepository.getByUserId(userId);
   }
 
-  public void renameFileById(UUID fileId, String newFileName) throws SQLException {
+  public String renameFileById(UUID fileId, String newFileName) throws SQLException {
     FileDto fileDto = getById(fileId);
 
     if (fileDto.getDeletedAt() != null) {
@@ -98,6 +98,8 @@ public class FileService {
     }
 
     FileRepository.renameById(fileId, newFileName);
+
+    return newFileName;
   }
 
   public void deleteFileById(UUID fileId) throws SQLException {

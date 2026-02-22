@@ -86,9 +86,13 @@ export function FileInformation(originalElement) {
     fileName.disabled = true
     renameFileButton.disabled = true
     try {
-      const success = await renameFile(filesState.statistics.file.fileId, fileName.value)
-      if (success) {
-        filesState.statistics.file.fileName = fileName.value
+      const { success, newFileName } = await renameFile(
+        filesState.statistics.file.fileId,
+        fileName.value,
+      )
+
+      if (success && newFileName) {
+        filesState.statistics.file.fileName = newFileName
       }
     } catch (error) {
       console.error(error)
@@ -96,6 +100,7 @@ export function FileInformation(originalElement) {
       alert(`Ошибка при переименований файла: ${error.response.data.title}`)
     } finally {
       fileName.disabled = false
+      fileName.value = filesState.statistics.file.fileName
     }
   })
 
