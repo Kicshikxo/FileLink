@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.database.repository.FileRepository;
 import ru.kicshikxo.filelink.dto.file.FileDto;
 import ru.kicshikxo.filelink.service.FileService;
@@ -27,12 +26,12 @@ public class FileCleanupTask {
 
   private static void cleanupOldFiles() {
     try {
-      List<FileDto> expiredFiles = FileRepository.getExpiredFiles(ServerConfig.FILE_TTL_SECONDS);
+      List<FileDto> expiredFiles = FileRepository.getExpiredFiles();
 
-      for (FileDto file : expiredFiles) {
-        FileRepository.expireById(file.getFileId());
+      for (FileDto fileDto : expiredFiles) {
+        FileRepository.expireById(fileDto.getFileId());
 
-        File expiredFile = fileService.getFileById(file.getFileId());
+        File expiredFile = fileService.getFileById(fileDto.getFileId());
         expiredFile.delete();
       }
 

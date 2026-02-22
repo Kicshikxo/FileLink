@@ -16,12 +16,13 @@ public class FileDto {
   private Timestamp updatedAt;
   private Timestamp deletedAt;
   private Timestamp expiredAt;
+  private Timestamp expiresAt;
 
   public FileDto() {
   }
 
   public FileDto(UUID fileId, UUID userId, long index, String name, long size, Timestamp createdAt, Timestamp updatedAt,
-      Timestamp deletedAt, Timestamp expiredAt) {
+      Timestamp deletedAt, Timestamp expiredAt, Timestamp expiresAt) {
     this.fileId = fileId;
     this.userId = userId;
     this.fileIndex = index;
@@ -32,6 +33,7 @@ public class FileDto {
     this.updatedAt = updatedAt;
     this.deletedAt = deletedAt;
     this.expiredAt = expiredAt;
+    this.expiresAt = expiresAt;
   }
 
   public UUID getFileId() {
@@ -72,5 +74,9 @@ public class FileDto {
 
   public Timestamp getExpiredAt() {
     return expiredAt;
+  }
+
+  public Timestamp getExpiresAt() {
+    return expiresAt;
   }
 }

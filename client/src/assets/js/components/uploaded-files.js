@@ -1,7 +1,7 @@
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { deleteFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
-import { formatFileSize } from '~/assets/js/utils'
+import { formatDate, formatFileSize } from '~/assets/js/utils'
 
 import '~/assets/css/components/uploaded-files.css'
 
@@ -33,18 +33,15 @@ export function UploadedFiles(originalElement) {
         fileItem.classList.add('uploaded-files__list-item')
         fileItem.innerHTML = /*html*/ `
           <span class="uploaded-files__list-item__name">
-            ${file.fileName} <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span>
+            <a href="/information?fileId=${file.fileId}">${file.fileName}</a> <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span>
           </span>
           <div class="uploaded-files__list-item__actions">
             ${
               file.expiredAt
                 ? /*html*/ `
-                <div class="uploaded-files__list-item__expired">Файл устарел ${new Date(file.expiredAt).toLocaleDateString('ru-RU')}</div>
+                <div class="uploaded-files__list-item__expired">Файл устарел ${formatDate(file.expiredAt)}</div>
                 `
                 : /*html*/ `
-                <a href="/information?fileId=${file.fileId}">
-                  <button class="app-button app-button--small">Информация</button>
-                </a>
                 <a
                   href="${file.fileShortId ? `${window.location.origin}/id/${file.fileShortId}` : `${window.location.origin}/api/files/download/${file.fileId}`}"
                   class="copy-file-link"
@@ -56,14 +53,36 @@ export function UploadedFiles(originalElement) {
                 </a>
                 `
             }
-            <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
+            <a href="/api/files/delete/${file.fileId}" class="delete-file">
+              <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
+            </a>
           </div>
         `
 
-        const deleteFileButton = fileItem.querySelector('.delete-file-button')
         const copyFileLink = fileItem.querySelector('.copy-file-link')
         const copyFileLinkButton = fileItem.querySelector('.copy-file-link-button')
+        const deleteFileLink = fileItem.querySelector('.delete-file')
+        const deleteFileButton = fileItem.querySelector('.delete-file-button')
 
+        copyFileLink?.addEventListener('click', (event) => {
+          event.preventDefault()
+        })
+        copyFileLinkButton?.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(
+              file.fileShortId
+                ? `${window.location.origin}/id/${file.fileShortId}`
+                : `${window.location.origin}/api/files/download/${file.fileId}`,
+            )
+            alert(`Ссылка на файл "${file.fileName}" скопирована`)
+          } catch (error) {
+            console.error(error)
+          }
+        })
+
+        deleteFileLink?.addEventListener('click', (event) => {
+          event.preventDefault()
+        })
         deleteFileButton?.addEventListener('click', async (event) => {
           event.preventDefault()
 
@@ -80,22 +99,6 @@ export function UploadedFiles(originalElement) {
             alert(`Ошибка при удалении файла: ${error.response.data.title}`)
           } finally {
             deleteFileButton.disabled = false
-          }
-        })
-
-        copyFileLink?.addEventListener('click', (event) => {
-          event.preventDefault()
-        })
-        copyFileLinkButton?.addEventListener('click', async () => {
-          try {
-            await navigator.clipboard.writeText(
-              file.fileShortId
-                ? `${window.location.origin}/id/${file.fileShortId}`
-                : `${window.location.origin}/api/files/download/${file.fileId}`,
-            )
-            alert(`Ссылка на файл "${file.fileName}" скопирована`)
-          } catch (error) {
-            console.error(error)
           }
         })
 

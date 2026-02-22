@@ -5,21 +5,64 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+import ru.kicshikxo.filelink.config.ServerConfig;
 import ru.kicshikxo.filelink.database.Database;
 import ru.kicshikxo.filelink.dto.file.FileDto;
 
 public class FileRepository {
   public static FileDto getById(UUID fileId) throws SQLException {
     return Database.queryFirst(
-        "SELECT * FROM files WHERE file_id = ?",
-        preparedStatement -> preparedStatement.setObject(1, fileId),
+        "SELECT files.*, " +
+            "COALESCE(last_downloads.last_download_time, files.created_at) + (? * INTERVAL '1 second') AS expires_at " +
+            "FROM files " +
+            "LEFT JOIN ( " +
+            "    SELECT file_id, MAX(download_time) AS last_download_time " +
+            "    FROM file_downloads " +
+            "    GROUP BY file_id " +
+            ") AS last_downloads ON files.file_id = last_downloads.file_id " +
+            "WHERE files.file_id = ? ",
+        preparedStatement -> {
+          preparedStatement.setLong(1, ServerConfig.FILE_TTL_SECONDS);
+          preparedStatement.setObject(2, fileId);
+        },
         FileRepository::fileDtoResultSet);
   }
 
   public static FileDto getByIndex(long fileIndex) throws SQLException {
     return Database.queryFirst(
-        "SELECT * FROM files WHERE file_index = ?",
-        preparedStatement -> preparedStatement.setObject(1, fileIndex),
+        "SELECT files.*, " +
+            "COALESCE(last_downloads.last_download_time, files.created_at) + (? * INTERVAL '1 second') AS expires_at " +
+            "FROM files " +
+            "LEFT JOIN ( " +
+            "    SELECT file_id, MAX(download_time) AS last_download_time " +
+            "    FROM file_downloads " +
+            "    GROUP BY file_id " +
+            ") AS last_downloads ON files.file_id = last_downloads.file_id " +
+            "WHERE files.file_index = ? ",
+        preparedStatement -> {
+          preparedStatement.setLong(1, ServerConfig.FILE_TTL_SECONDS);
+          preparedStatement.setLong(2, fileIndex);
+        },
+        FileRepository::fileDtoResultSet);
+  }
+
+  public static List<FileDto> getByUserId(UUID userId) throws SQLException {
+    return Database.query(
+        "SELECT files.*, " +
+            "COALESCE(last_downloads.last_download_time, files.created_at) + (? * INTERVAL '1 second') AS expires_at " +
+            "FROM files " +
+            "LEFT JOIN ( " +
+            "    SELECT file_id, MAX(download_time) AS last_download_time " +
+            "    FROM file_downloads " +
+            "    GROUP BY file_id " +
+            ") AS last_downloads ON files.file_id = last_downloads.file_id " +
+            "WHERE files.user_id = ? " +
+            "AND files.deleted_at IS NULL " +
+            "ORDER BY files.created_at DESC",
+        preparedStatement -> {
+          preparedStatement.setObject(1, ServerConfig.FILE_TTL_SECONDS);
+          preparedStatement.setObject(2, userId);
+        },
         FileRepository::fileDtoResultSet);
   }
 
@@ -44,13 +87,6 @@ public class FileRepository {
         preparedStatement -> preparedStatement.setObject(1, fileId));
   }
 
-  public static List<FileDto> getByUserId(UUID userId) throws SQLException {
-    return Database.query(
-        "SELECT * FROM files WHERE user_id = ? AND deleted_at IS NULL ORDER BY created_at DESC",
-        preparedStatement -> preparedStatement.setObject(1, userId),
-        FileRepository::fileDtoResultSet);
-  }
-
   public static void createWithId(UUID fileId, UUID userId, String fileName, long fileSize) throws SQLException {
     Database.update(
         "INSERT INTO files (file_id, user_id, file_name, file_size) VALUES (?, ?, ?, ?)",
@@ -69,22 +105,20 @@ public class FileRepository {
         resultSet -> resultSet.getLong(1));
   }
 
-  public static List<FileDto> getExpiredFiles(long fileTtlSeconds) throws SQLException {
-    String sql = "SELECT files.* " +
-        "FROM files " +
-        "LEFT JOIN ( " +
-        "    SELECT file_id, MAX(download_time) AS last_download_time " +
-        "    FROM file_downloads " +
-        "    GROUP BY file_id " +
-        ") AS last_downloads ON files.file_id = last_downloads.file_id " +
-        "WHERE files.deleted_at IS NULL " +
-        "  AND files.expired_at IS NULL " +
-        "  AND COALESCE(last_downloads.last_download_time, files.created_at) " +
-        "      < NOW() - (? * INTERVAL '1 second')";
-
+  public static List<FileDto> getExpiredFiles() throws SQLException {
     return Database.query(
-        sql,
-        ps -> ps.setLong(1, fileTtlSeconds),
+        "SELECT files.* " +
+            "FROM files " +
+            "LEFT JOIN ( " +
+            "    SELECT file_id, MAX(download_time) AS last_download_time " +
+            "    FROM file_downloads " +
+            "    GROUP BY file_id " +
+            ") AS last_downloads ON files.file_id = last_downloads.file_id " +
+            "WHERE files.deleted_at IS NULL " +
+            "  AND files.expired_at IS NULL " +
+            "  AND COALESCE(last_downloads.last_download_time, files.created_at) " +
+            "      < NOW() - (? * INTERVAL '1 second')",
+        ps -> ps.setLong(1, ServerConfig.FILE_TTL_SECONDS),
         FileRepository::fileDtoResultSet);
   }
 
@@ -100,6 +134,8 @@ public class FileRepository {
         resultSet.getTimestamp("deleted_at") != null ? resultSet.getTimestamp("deleted_at")
             : null,
         resultSet.getTimestamp("expired_at") != null ? resultSet.getTimestamp("expired_at")
+            : null,
+        resultSet.getTimestamp("expires_at") != null ? resultSet.getTimestamp("expires_at")
             : null);
   }
 }

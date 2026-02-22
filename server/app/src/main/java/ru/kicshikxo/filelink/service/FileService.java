@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import io.javalin.config.SizeUnit;
 import io.javalin.http.BadRequestResponse;
+import io.javalin.http.GoneResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UploadedFile;
 import io.javalin.util.FileUtil;
@@ -53,6 +55,20 @@ public class FileService {
     return matchingFiles[0];
   }
 
+  public Optional<File> tryGetFileById(UUID fileId) {
+    File uploadsDirectory = new File(ServerConfig.UPLOADS_DIRECTORY);
+    if (!uploadsDirectory.exists()) {
+      return Optional.empty();
+    }
+
+    File[] matchingFiles = uploadsDirectory.listFiles((directory, name) -> name.startsWith(fileId.toString()));
+    if (matchingFiles == null || matchingFiles.length == 0) {
+      return Optional.empty();
+    }
+
+    return Optional.of(matchingFiles[0]);
+  }
+
   public List<FileDto> getFilesByUserId(UUID userId) throws SQLException {
     return FileRepository.getByUserId(userId);
   }
@@ -61,10 +77,10 @@ public class FileService {
     FileDto fileDto = getById(fileId);
 
     if (fileDto.getDeletedAt() != null) {
-      throw new NotFoundResponse("FILE DELETED");
+      throw new GoneResponse("FILE DELETED");
     }
     if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
-      throw new NotFoundResponse("FILE EXPIRED");
+      throw new GoneResponse("FILE EXPIRED");
     }
 
     String oldExtension = getFileExtension(fileDto.getFileName());
@@ -86,9 +102,9 @@ public class FileService {
 
   public void deleteFileById(UUID fileId) throws SQLException {
     FileDto fileDto = getById(fileId);
-    File file = getFileById(fileDto.getFileId());
+    Optional<File> file = tryGetFileById(fileDto.getFileId());
 
-    file.delete();
+    file.ifPresent(File::delete);
     FileRepository.deleteById(fileDto.getFileId());
   }
 

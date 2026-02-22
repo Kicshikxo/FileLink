@@ -25,9 +25,15 @@ export function FileInformation(originalElement) {
         <span class="file-information__file-info-item">
           Дата загрузки: <span class="file-information__info-item--date"></span>
         </span>
+        <span class="file-information__file-info-item file-information__info-item-expiration">
+          <span class="file-information__info-item--expiration-type"></span>
+          <span class="file-information__info-item--expiration-date"></span>
+        </span>
       </div>
       <div class="file-information__actions">
-        <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
+        <a class="delete-file">
+          <button class="app-button app-button--danger app-button--small delete-file-button">Удалить</button>
+        </a>
         <a class="copy-file-link">
           <button class="app-button app-button--primary app-button--small copy-file-link-button" style="width: 100%">Ссылка</button>
         </a>
@@ -49,11 +55,19 @@ export function FileInformation(originalElement) {
   const fileName = component.querySelector('.file-information__info-item--name')
   const fileSize = component.querySelector('.file-information__info-item--size')
   const fileDate = component.querySelector('.file-information__info-item--date')
+  const fileExpiration = component.querySelector('.file-information__info-item-expiration')
+  const fileExpirationType = component.querySelector(
+    '.file-information__info-item--expiration-type',
+  )
+  const fileExpirationDate = component.querySelector(
+    '.file-information__info-item--expiration-date',
+  )
 
   const renameFileButton = component.querySelector('.rename-file-button')
+  const deleteFileLink = component.querySelector('.delete-file')
   const deleteFileButton = component.querySelector('.delete-file-button')
-  const copyFileLinkButton = component.querySelector('.copy-file-link-button')
   const copyFileLink = component.querySelector('.copy-file-link')
+  const copyFileLinkButton = component.querySelector('.copy-file-link-button')
   const downloadFileLink = component.querySelector('.download-file-link')
 
   const containerLoader = component.querySelector('.file-information__loader')
@@ -63,22 +77,6 @@ export function FileInformation(originalElement) {
   const chart = component.querySelector('.file-information__chart')
 
   let chartInstance = null
-
-  copyFileLink.addEventListener('click', (event) => {
-    event.preventDefault()
-  })
-  copyFileLinkButton.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(
-        filesState.statistics.file.fileShortId
-          ? `${window.location.origin}/id/${filesState.statistics.file.fileShortId}`
-          : `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`,
-      )
-      alert(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
-    } catch (error) {
-      console.error(error)
-    }
-  })
 
   fileName.addEventListener('input', () => {
     renameFileButton.disabled = fileName.value === filesState.statistics.file.fileName
@@ -101,6 +99,9 @@ export function FileInformation(originalElement) {
     }
   })
 
+  deleteFileLink.addEventListener('click', (event) => {
+    event.preventDefault()
+  })
   deleteFileButton.addEventListener('click', async () => {
     deleteFileButton.disabled = true
     try {
@@ -117,6 +118,22 @@ export function FileInformation(originalElement) {
       alert(`Ошибка при удалении файла: ${error.response.data.title}`)
     } finally {
       deleteFileButton.disabled = false
+    }
+  })
+
+  copyFileLink.addEventListener('click', (event) => {
+    event.preventDefault()
+  })
+  copyFileLinkButton.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(
+        filesState.statistics.file.fileShortId
+          ? `${window.location.origin}/id/${filesState.statistics.file.fileShortId}`
+          : `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`,
+      )
+      alert(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
+    } catch (error) {
+      console.error(error)
     }
   })
 
@@ -163,21 +180,40 @@ export function FileInformation(originalElement) {
   document.addEventListener('filesStateChange', (event) => {
     const { key, value } = event.detail
     if (key === 'statistics') {
+      const file = value?.file
+
       containerLoader.style.display = 'none'
       containerEmpty.style.display = value?.data?.length ? 'none' : 'block'
       chartTitle.style.display = value?.data?.length ? 'block' : 'none'
       chart.style.display = value?.data?.length ? 'block' : 'none'
-      copyFileLink.href = filesState.statistics.file.fileShortId
-        ? `${window.location.origin}/id/${filesState.statistics.file.fileShortId}`
-        : `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`
-      downloadFileLink.href = `/api/files/download/${filesState.statistics?.file?.fileId}`
 
-      if (value?.file?.fileName && value?.file?.fileSize && value?.file?.createdAt) {
+      if (file?.expiredAt) {
+        copyFileLink.style.display = 'none'
+        downloadFileLink.style.display = 'none'
+      } else {
+        copyFileLink.href = file?.fileShortId
+          ? `${window.location.origin}/id/${file?.fileShortId}`
+          : `${window.location.origin}/api/files/download/${file?.fileId}`
+        downloadFileLink.href = `/api/files/download/${file?.fileId}`
+      }
+      deleteFileLink.href = `/api/files/delete/${file?.fileId}`
+
+      if (file?.fileName && file?.fileSize && file?.createdAt) {
         fileInfo.style.display = 'flex'
 
-        fileName.value = value.file.fileName
-        fileSize.textContent = formatFileSize(value.file.fileSize)
-        fileDate.textContent = formatDateTime(value.file.createdAt)
+        fileName.value = file.fileName
+        fileSize.textContent = formatFileSize(file.fileSize)
+        fileDate.textContent = formatDateTime(file.createdAt)
+
+        if (file?.expiredAt) {
+          fileExpirationType.textContent = 'Файл устарел:'
+          fileExpirationDate.textContent = formatDateTime(file.expiredAt)
+        } else if (file?.expiresAt) {
+          fileExpirationType.textContent = 'Файл устареет:'
+          fileExpirationDate.textContent = formatDateTime(file.expiresAt)
+        } else {
+          fileExpiration.style.display = 'none'
+        }
       } else {
         fileInfo.style.display = 'none'
       }

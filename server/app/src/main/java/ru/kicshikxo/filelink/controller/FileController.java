@@ -13,6 +13,7 @@ import org.apache.cxf.attachment.Rfc5987Util;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.GoneResponse;
 import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UploadedFile;
@@ -86,9 +87,9 @@ public class FileController {
 
     try {
       UUID userId = ctx.attribute("userId");
-      List<FileDto> files = fileService.getFilesByUserId(userId);
+      List<FileDto> filesDto = fileService.getFilesByUserId(userId);
 
-      ctx.json(files);
+      ctx.json(filesDto);
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
     }
@@ -102,13 +103,19 @@ public class FileController {
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
       String fileName = ctx.bodyAsClass(RenameFileRequestDto.class).getName();
 
-      FileDto file = FileRepository.getById(fileId);
-      if (file == null) {
+      FileDto fileDto = FileRepository.getById(fileId);
+      if (fileDto == null) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+      if (!fileDto.getUserId().equals(userId)) {
         throw new NotFoundResponse("FILE NOT FOUND");
       }
 
-      if (!file.getUserId().equals(userId)) {
-        throw new NotFoundResponse("FILE NOT FOUND");
+      if (fileDto.getDeletedAt() != null) {
+        throw new GoneResponse("FILE DELETED");
+      }
+      if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
+        throw new GoneResponse("FILE EXPIRED");
       }
 
       fileService.renameFileById(fileId, fileName);
@@ -125,12 +132,11 @@ public class FileController {
       UUID userId = ctx.attribute("userId");
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
 
-      FileDto file = FileRepository.getById(fileId);
-      if (file == null) {
+      FileDto fileDto = FileRepository.getById(fileId);
+      if (fileDto == null) {
         throw new NotFoundResponse("FILE NOT FOUND");
       }
-
-      if (!file.getUserId().equals(userId)) {
+      if (!fileDto.getUserId().equals(userId)) {
         throw new NotFoundResponse("FILE NOT FOUND");
       }
 
@@ -149,17 +155,20 @@ public class FileController {
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
       int days = ctx.queryParam("days") != null ? Integer.parseInt(ctx.queryParam("days")) : 7;
 
-      FileDto file = FileRepository.getById(fileId);
-      if (file == null) {
+      FileDto fileDto = FileRepository.getById(fileId);
+      if (fileDto == null) {
+        throw new NotFoundResponse("FILE NOT FOUND");
+      }
+      if (!fileDto.getUserId().equals(userId)) {
         throw new NotFoundResponse("FILE NOT FOUND");
       }
 
-      if (!file.getUserId().equals(userId)) {
-        throw new NotFoundResponse("FILE NOT FOUND");
+      if (fileDto.getDeletedAt() != null) {
+        throw new GoneResponse("FILE DELETED");
       }
 
       ctx.json(Map.of(
-          "file", file,
+          "file", fileDto,
           "data", fileService.getFileStatisticsById(fileId, days)));
     } catch (Exception error) {
       throw new InternalServerErrorResponse(error.toString());
@@ -176,10 +185,10 @@ public class FileController {
       FileDto fileDto = fileService.getById(fileId);
 
       if (fileDto.getDeletedAt() != null) {
-        throw new NotFoundResponse("FILE DELETED");
+        throw new GoneResponse("FILE DELETED");
       }
       if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
-        throw new NotFoundResponse("FILE EXPIRED");
+        throw new GoneResponse("FILE EXPIRED");
       }
 
       File savedFile = fileService.getFileById(fileId);
@@ -204,10 +213,10 @@ public class FileController {
       FileDto fileDto = fileService.getByShortId(shortId);
 
       if (fileDto.getDeletedAt() != null) {
-        throw new NotFoundResponse("FILE DELETED");
+        throw new GoneResponse("FILE DELETED");
       }
       if (fileDto.getExpiredAt() != null && fileDto.getExpiredAt().before(new Date())) {
-        throw new NotFoundResponse("FILE EXPIRED");
+        throw new GoneResponse("FILE EXPIRED");
       }
 
       File savedFile = fileService.getFileById(fileDto.getFileId());
