@@ -153,7 +153,7 @@ public class FileController {
     try {
       UUID userId = ctx.attribute("userId");
       UUID fileId = UUID.fromString(ctx.pathParam("fileId"));
-      int days = ctx.queryParam("days") != null ? Integer.parseInt(ctx.queryParam("days")) : 7;
+      int days = ctx.queryParam("days") != null ? Math.min(Integer.parseInt(ctx.queryParam("days")), 365) : 7;
 
       FileDto fileDto = FileRepository.getById(fileId);
       if (fileDto == null) {

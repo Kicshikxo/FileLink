@@ -33,7 +33,7 @@ export function UploadedFiles(originalElement) {
         fileItem.classList.add('uploaded-files__list-item')
         fileItem.innerHTML = /*html*/ `
           <span class="uploaded-files__list-item__name">
-            <a href="/information?fileId=${file.fileId}">${file.fileName}</a> <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span>
+            <a href="/information?fileId=${file.fileId}?days=7">${file.fileName}</a> <span class="uploaded-files__list-item__size">(${formatFileSize(file.fileSize)})</span>
           </span>
           <div class="uploaded-files__list-item__actions">
             ${

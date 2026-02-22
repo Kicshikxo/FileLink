@@ -10,7 +10,7 @@ document.addEventListener('authStateChange', async (event) => {
 
     try {
       const urlParams = new URLSearchParams(window.location.search)
-      const fileStatistics = await getFileStatistics(urlParams.get('fileId'))
+      const fileStatistics = await getFileStatistics(urlParams.get('fileId'), urlParams.get('days'))
 
       filesState.statistics = fileStatistics
     } catch (error) {
