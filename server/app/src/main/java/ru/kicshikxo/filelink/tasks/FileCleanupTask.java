@@ -2,6 +2,7 @@ package ru.kicshikxo.filelink.tasks;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -29,10 +30,10 @@ public class FileCleanupTask {
       List<FileDto> expiredFiles = FileRepository.getExpiredFiles();
 
       for (FileDto fileDto : expiredFiles) {
-        FileRepository.expireById(fileDto.getFileId());
+        Optional<File> expiredFile = fileService.tryGetFileById(fileDto.getFileId());
 
-        File expiredFile = fileService.getFileById(fileDto.getFileId());
-        expiredFile.delete();
+        expiredFile.ifPresent(File::delete);
+        FileRepository.expireById(fileDto.getFileId());
       }
 
       logger.info(expiredFiles.size() + " files marked as expired");

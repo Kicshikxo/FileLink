@@ -56,7 +56,6 @@ public class AuthService {
 
   public UUID verifyToken(String token) {
     try {
-
       Claims claims = Jwts.parser()
           .verifyWith(SECRET_KEY)
           .build()
