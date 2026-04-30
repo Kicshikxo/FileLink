@@ -58,7 +58,7 @@ public class FileRepository {
             ") AS last_downloads ON files.file_id = last_downloads.file_id " +
             "WHERE files.user_id = ? " +
             "AND files.deleted_at IS NULL " +
-            "ORDER BY files.created_at DESC",
+            "ORDER BY files.created_at DESC ",
         preparedStatement -> {
           preparedStatement.setObject(1, ServerConfig.FILE_TTL_SECONDS);
           preparedStatement.setObject(2, userId);
@@ -108,16 +108,20 @@ public class FileRepository {
   public static List<FileDto> getExpiredFiles() throws SQLException {
     return Database.query(
         "SELECT files.* " +
-            "FROM files " +
-            "LEFT JOIN ( " +
-            "    SELECT file_id, MAX(download_time) AS last_download_time " +
-            "    FROM file_downloads " +
-            "    GROUP BY file_id " +
-            ") AS last_downloads ON files.file_id = last_downloads.file_id " +
+            "FROM (" +
+            "    SELECT files.*, " +
+            "    COALESCE(last_downloads.last_download_time, files.created_at) + (? * INTERVAL '1 second') AS expires_at "
+            +
+            "    FROM files " +
+            "    LEFT JOIN ( " +
+            "        SELECT file_id, MAX(download_time) AS last_download_time " +
+            "        FROM file_downloads " +
+            "        GROUP BY file_id " +
+            "    ) AS last_downloads ON files.file_id = last_downloads.file_id " +
+            ") as files " +
             "WHERE files.deleted_at IS NULL " +
             "  AND files.expired_at IS NULL " +
-            "  AND COALESCE(last_downloads.last_download_time, files.created_at) " +
-            "      < NOW() - (? * INTERVAL '1 second')",
+            "  AND files.expires_at < NOW() ",
         ps -> ps.setLong(1, ServerConfig.FILE_TTL_SECONDS),
         FileRepository::fileDtoResultSet);
   }
