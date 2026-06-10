@@ -14,6 +14,7 @@ const proxy = {
 
 export default defineConfig({
   root: 'src',
+  envDir: resolve(__dirname),
 
   resolve: {
     alias: {
