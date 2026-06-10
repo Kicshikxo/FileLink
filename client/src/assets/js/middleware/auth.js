@@ -1,6 +1,7 @@
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { checkAuth } from '~/assets/js/api/auth'
 import { authState } from '~/assets/js/state/auth'
+import toast from '~/assets/js/toast'
 
 const authPages = ['/login', '/register']
 
@@ -46,7 +47,7 @@ async function authMiddleware() {
     if (error?.response?.status === 401) {
       authState.isAuth = false
     } else if (error?.response?.status === 500) {
-      alert('Ошибка сервера')
+      toast.error('Ошибка сервера')
     }
   }
 

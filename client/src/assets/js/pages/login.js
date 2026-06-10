@@ -1,4 +1,5 @@
 import { login } from '~/assets/js/api/auth'
+import toast from '~/assets/js/toast'
 
 import '~/assets/css/pages/login.css'
 
@@ -19,7 +20,7 @@ loginForm.addEventListener('submit', async (event) => {
     }
   } catch (error) {
     console.error(error)
-    alert(`Ошибка при входе в систему: ${error.response?.data?.title ?? error.message}`)
+    toast.error(`Ошибка при входе в систему: ${error.response?.data?.title ?? error.message}`)
   } finally {
     loginSubmitButton.disabled = false
   }

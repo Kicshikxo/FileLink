@@ -2,6 +2,7 @@ import Chart from 'chart.js/auto'
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { deleteFile, renameFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
+import toast from '~/assets/js/toast'
 import { formatDate, formatDateTime, formatFileSize, getShareLink } from '~/assets/js/utils'
 
 import '~/assets/css/components/file-information.css'
@@ -94,10 +95,13 @@ export function FileInformation(originalElement) {
 
       if (success && newFileName) {
         filesState.statistics.file.fileName = newFileName
+        toast.success(`Файл переименован в "${newFileName}"`)
       }
     } catch (error) {
       console.error(error)
-      alert(`Ошибка при переименований файла: ${error.response?.data?.title ?? error.message}`)
+      toast.error(
+        `Ошибка при переименований файла: ${error.response?.data?.title ?? error.message}`,
+      )
     } finally {
       fileName.disabled = false
       fileName.value = filesState.statistics.file.fileName
@@ -121,7 +125,7 @@ export function FileInformation(originalElement) {
       }
     } catch (error) {
       console.error(error)
-      alert(`Ошибка при удалении файла: ${error.response?.data?.title ?? error.message}`)
+      toast.error(`Ошибка при удалении файла: ${error.response?.data?.title ?? error.message}`)
     } finally {
       deleteFileButton.disabled = false
     }
@@ -132,10 +136,8 @@ export function FileInformation(originalElement) {
   })
   copyFileLinkButton.addEventListener('click', async () => {
     try {
-      await navigator.clipboard.writeText(
-        getShareLink(filesState.statistics.file),
-      )
-      alert(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
+      await navigator.clipboard.writeText(getShareLink(filesState.statistics.file))
+      toast.info(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
     } catch (error) {
       console.error(error)
     }

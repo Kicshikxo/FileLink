@@ -1,4 +1,5 @@
 import { register } from '~/assets/js/api/auth'
+import toast from '~/assets/js/toast'
 
 import '~/assets/css/pages/register.css'
 
@@ -14,7 +15,7 @@ registerForm.addEventListener('submit', async (event) => {
   const formData = new FormData(registerForm)
 
   if (formData.get('password') !== formData.get('password-confirmation')) {
-    alert('Пароли не совпадают')
+    toast.error('Пароли не совпадают')
     return
   }
 
@@ -25,7 +26,7 @@ registerForm.addEventListener('submit', async (event) => {
     }
   } catch (error) {
     console.error(error)
-    alert(`Ошибка при регистрации: ${error.response?.data?.title ?? error.message}`)
+    toast.error(`Ошибка при регистрации: ${error.response?.data?.title ?? error.message}`)
   } finally {
     registerSubmitButton.disabled = false
   }

@@ -1,5 +1,6 @@
 import { getUploadedFiles } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
+import toast from '~/assets/js/toast'
 
 import '~/assets/css/pages/dashboard.css'
 
@@ -13,7 +14,7 @@ document.addEventListener('authStateChange', async (event) => {
       filesState.files = (filesState.files ?? []).concat(uploadedFiles)
     } catch (error) {
       console.error(error)
-      alert(`Ошибка получения файлов: ${error.response?.data?.title ?? error.message}`)
+      toast.error(`Ошибка получения файлов: ${error.response?.data?.title ?? error.message}`)
     }
   }
 })

@@ -4,6 +4,7 @@
 @import url('~/assets/css/app/input.css');
 @import url('~/assets/css/app/container.css');
 @import url('~/assets/css/app/layout.css');
+@import url('~/assets/css/app/toast.css');
 
 * {
   margin: 0;

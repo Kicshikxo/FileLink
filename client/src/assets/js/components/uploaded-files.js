@@ -1,6 +1,7 @@
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { deleteFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
+import toast from '~/assets/js/toast'
 import { formatDate, formatFileSize, getShareLink } from '~/assets/js/utils'
 
 import '~/assets/css/components/uploaded-files.css'
@@ -69,10 +70,8 @@ export function UploadedFiles(originalElement) {
         })
         copyFileLinkButton?.addEventListener('click', async () => {
           try {
-            await navigator.clipboard.writeText(
-              getShareLink(file),
-            )
-            alert(`Ссылка на файл "${file.fileName}" скопирована`)
+            await navigator.clipboard.writeText(getShareLink(file))
+            toast.info(`Ссылка на файл "${file.fileName}" скопирована`)
           } catch (error) {
             console.error(error)
           }
@@ -91,10 +90,13 @@ export function UploadedFiles(originalElement) {
               filesState.files = (filesState.files ?? []).filter(
                 ({ fileId }) => fileId !== file.fileId,
               )
+              toast.success(`Файл "${file.fileName}" удалён`)
             }
           } catch (error) {
             console.error(error)
-            alert(`Ошибка при удалении файла: ${error.response?.data?.title ?? error.message}`)
+            toast.error(
+              `Ошибка при удалении файла: ${error.response?.data?.title ?? error.message}`,
+            )
           } finally {
             deleteFileButton.disabled = false
           }

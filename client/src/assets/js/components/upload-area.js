@@ -1,7 +1,8 @@
 import UploadIcon from '~/assets/icons/line-md--file-upload-filled.svg?raw'
 import { getFilesLimits, uploadFiles } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
-import { formatFileSize } from '~/assets/js/utils'
+import toast from '~/assets/js/toast'
+import { formatFileSize, pluralize } from '~/assets/js/utils'
 
 import '~/assets/css/components/upload-area.css'
 
@@ -71,7 +72,7 @@ export function UploadArea(originalElement) {
 
         for (const file of files) {
           if (file.size > maxFileSizeBytes) {
-            alert(
+            toast.error(
               `Файл "${file.name}" слишком большой (максимум ${formatFileSize(maxFileSizeBytes)})`,
             )
             return
@@ -80,12 +81,12 @@ export function UploadArea(originalElement) {
 
         const totalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0)
         if (totalSize > remainingUserBytes) {
-          alert(`Превышен лимит загрузки (осталось ${formatFileSize(remainingUserBytes)})`)
+          toast.error(`Превышен лимит загрузки (осталось ${formatFileSize(remainingUserBytes)})`)
           return
         }
       } catch (error) {
         console.error(error)
-        alert(`Ошибка проверки размеров файлов`)
+        toast.error(`Ошибка проверки размеров файлов`)
         return
       } finally {
         filesState.checkFiles = false
@@ -97,9 +98,13 @@ export function UploadArea(originalElement) {
       try {
         const uploadedFiles = await uploadFiles(files, (percent) => (filesState.progress = percent))
         filesState.files = (filesState.files ?? []).concat(uploadedFiles)
+        const count = uploadedFiles.length
+        toast.info(
+          `${pluralize(count, 'Загружен', 'Загружено', 'Загружено')} ${count} ${pluralize(count, 'файл', 'файла', 'файлов')}`,
+        )
       } catch (error) {
         console.error(error)
-        alert(`Ошибка при загрузке: ${error.response?.data?.title ?? error.message}`)
+        toast.error(`Ошибка при загрузке: ${error.response?.data?.title ?? error.message}`)
       } finally {
         filesState.uploading = false
       }

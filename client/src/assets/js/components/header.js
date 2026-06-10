@@ -2,6 +2,7 @@ import LogoIcon from '~/assets/icons/line-md--cloud-alt-upload-filled.svg?raw'
 import DashboardIcon from '~/assets/icons/line-md--file-search-filled.svg?raw'
 import LogoutIcon from '~/assets/icons/line-md--logout.svg?raw'
 import { logout } from '~/assets/js/api/auth'
+import toast from '~/assets/js/toast'
 
 import '~/assets/css/components/progress-bar.css'
 
@@ -49,7 +50,9 @@ export function Header(originalElement) {
             }
           } catch (error) {
             console.error(error)
-            alert(`Ошибка при выходе из системы: ${error.response?.data?.title ?? error.message}`)
+            toast.error(
+              `Ошибка при выходе из системы: ${error.response?.data?.title ?? error.message}`,
+            )
           } finally {
             logoutButton.disabled = false
           }
