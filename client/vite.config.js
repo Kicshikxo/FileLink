@@ -1,6 +1,17 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
+const proxy = {
+  '/api': {
+    target: process.env.API_URL || 'http://localhost:7070',
+    changeOrigin: true,
+  },
+  '/id': {
+    target: process.env.API_URL || 'http://localhost:7070',
+    changeOrigin: true,
+  },
+}
+
 export default defineConfig({
   root: 'src',
 
@@ -13,31 +24,13 @@ export default defineConfig({
   server: {
     port: process.env.PORT || 3000,
     allowedHosts: true,
-    proxy: {
-      '/api': {
-        target: process.env.API_URL || 'http://localhost:7070',
-        changeOrigin: true,
-      },
-      '/id': {
-        target: process.env.API_URL || 'http://localhost:7070',
-        changeOrigin: true,
-      },
-    },
+    proxy,
   },
 
   preview: {
     port: process.env.PORT || 3000,
     allowedHosts: true,
-    proxy: {
-      '/api': {
-        target: process.env.API_URL || 'http://localhost:7070',
-        changeOrigin: true,
-      },
-      '/id': {
-        target: process.env.API_URL || 'http://localhost:7070',
-        changeOrigin: true,
-      },
-    },
+    proxy,
   },
 
   build: {

@@ -1,7 +1,7 @@
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { deleteFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
-import { formatDate, formatFileSize } from '~/assets/js/utils'
+import { formatDate, formatFileSize, getShareLink } from '~/assets/js/utils'
 
 import '~/assets/css/components/uploaded-files.css'
 
@@ -43,7 +43,7 @@ export function UploadedFiles(originalElement) {
                 `
                 : /*html*/ `
                 <a
-                  href="${file.fileShortId ? `${window.location.origin}/id/${file.fileShortId}` : `${window.location.origin}/api/files/download/${file.fileId}`}"
+                  href="${getShareLink(file)}"
                   class="copy-file-link"
                 >
                   <button class="app-button app-button--primary app-button--small copy-file-link-button">Ссылка</button>
@@ -70,9 +70,7 @@ export function UploadedFiles(originalElement) {
         copyFileLinkButton?.addEventListener('click', async () => {
           try {
             await navigator.clipboard.writeText(
-              file.fileShortId
-                ? `${window.location.origin}/id/${file.fileShortId}`
-                : `${window.location.origin}/api/files/download/${file.fileId}`,
+              getShareLink(file),
             )
             alert(`Ссылка на файл "${file.fileName}" скопирована`)
           } catch (error) {

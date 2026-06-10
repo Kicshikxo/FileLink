@@ -2,7 +2,7 @@ import Chart from 'chart.js/auto'
 import LoadingIcon from '~/assets/icons/line-md--loading-twotone-loop.svg?raw'
 import { deleteFile, renameFile } from '~/assets/js/api/files'
 import { filesState } from '~/assets/js/state/files'
-import { formatDate, formatDateTime, formatFileSize } from '~/assets/js/utils'
+import { formatDate, formatDateTime, formatFileSize, getShareLink } from '~/assets/js/utils'
 
 import '~/assets/css/components/file-information.css'
 
@@ -133,9 +133,7 @@ export function FileInformation(originalElement) {
   copyFileLinkButton.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(
-        filesState.statistics.file.fileShortId
-          ? `${window.location.origin}/id/${filesState.statistics.file.fileShortId}`
-          : `${window.location.origin}/api/files/download/${filesState.statistics.file.fileId}`,
+        getShareLink(filesState.statistics.file),
       )
       alert(`Ссылка на файл "${filesState.statistics.file.fileName}" скопирована`)
     } catch (error) {
@@ -197,9 +195,7 @@ export function FileInformation(originalElement) {
         copyFileLink.style.display = 'none'
         downloadFileLink.style.display = 'none'
       } else {
-        copyFileLink.href = file?.fileShortId
-          ? `${window.location.origin}/id/${file?.fileShortId}`
-          : `${window.location.origin}/api/files/download/${file?.fileId}`
+        copyFileLink.href = getShareLink(file)
         downloadFileLink.href = `/api/files/download/${file?.fileId}`
       }
       deleteFileLink.href = `/api/files/delete/${file?.fileId}`

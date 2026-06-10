@@ -17,3 +17,13 @@ export function formatDate(date) {
 export function formatDateTime(date) {
   return new Date(date).toLocaleString('ru-RU')
 }
+
+export function getShareLink(file) {
+  const shortLinkBase = import.meta.env.VITE_SHARE_LINK_BASE
+  if (shortLinkBase && file?.fileShortId) {
+    return new URL(file.fileShortId, shortLinkBase).toString()
+  }
+  return file?.fileShortId
+    ? `${window.location.origin}/id/${file.fileShortId}`
+    : `${window.location.origin}/api/files/download/${file.fileId}`
+}
